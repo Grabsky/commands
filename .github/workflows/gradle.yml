@@ -23,4 +23,4 @@ jobs:
         arguments: publish
       env:
         REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
-        REPO_PASSWORD: ${{ secrets.REPO_SECRET }}
+        REPO_SECRET: ${{ secrets.REPO_SECRET }}
