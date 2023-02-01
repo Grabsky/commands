@@ -52,7 +52,7 @@ public interface CompletionsProvider {
     }
 
     static <T> CompletionsProvider of(final Class<T> type) {
-        return (context) -> context.getManager().getSuggestionProvider(type).provide(context);
+        return (context) -> context.getManager().getCompletionsProvider(type).provide(context);
     }
 
 }

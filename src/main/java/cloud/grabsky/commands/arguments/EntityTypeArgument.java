@@ -37,7 +37,6 @@ import java.util.List;
 public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<EntityType> {
     /* SINGLETON */ INSTANCE;
 
-    // static list of materials available on the server
     private static final List<String> MINECRAFT_ENTITY_TYPE_NAMES = Registries.ENTITY_TYPE.keySet().stream()
             .sorted()
             .toList();

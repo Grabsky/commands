@@ -36,6 +36,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 import java.util.stream.Stream;
 
+// TO-DO: Support for more complex selectors?
 public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player> {
     /* SINGLETON */ INSTANCE;
 

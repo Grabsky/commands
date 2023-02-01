@@ -37,7 +37,6 @@ import java.util.List;
 public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Material> {
     /* SINGLETON */ INSTANCE;
 
-    // static list of materials available on the server
     private static final List<String> MINECRAFT_MATERIAL_NAMES = Registries.MATERIAL.keySet().stream()
             .sorted()
             .toList();

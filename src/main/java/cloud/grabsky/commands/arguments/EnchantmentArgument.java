@@ -37,7 +37,6 @@ import java.util.List;
 public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<Enchantment> {
     /* SINGLETON */ INSTANCE;
 
-    // static list of materials available on the server
     private static final List<String> MINECRAFT_ENCHANTMENT_NAMES = Registries.ENCHANTMENT.keySet().stream()
             .sorted()
             .toList();

@@ -23,26 +23,17 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.CompletionsProvider;
-import cloud.grabsky.commands.util.Arrays;
-import cloud.grabsky.commands.arguments.ComponentArgument;
-import cloud.grabsky.commands.arguments.DoubleArgument;
-import cloud.grabsky.commands.arguments.EnchantmentArgument;
-import cloud.grabsky.commands.arguments.EntityTypeArgument;
-import cloud.grabsky.commands.arguments.IntegerArgument;
-import cloud.grabsky.commands.arguments.MaterialArgument;
-import cloud.grabsky.commands.arguments.PlayerArgument;
-import cloud.grabsky.commands.arguments.PositionArgument;
-import cloud.grabsky.commands.arguments.StringArgument;
+import cloud.grabsky.commands.arguments.*;
 import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.components.ExceptionHandler;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.IncompatibleParserException;
+import cloud.grabsky.commands.util.Arrays;
 import io.papermc.paper.math.Position;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -55,19 +46,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-// to-do: better naming? "simple" is very ambiguous
-// to-do: queue peek
-// to-do: consistent class naming policy
-// to-do: javadocs & project documentation (github)
-// to-do: clean-up
-// to-do: final testing
+// TO-DO: Finish JavaDocs and GitHub documentation.
+// TO-DO: ArgumentQueue#peek
+// TO-DO: Better naming? "Simple" was a development placeholder.
+// TO-DO: More testing and improvements based on Q/A results.
 public final class SimpleCommandManager {
 
     @Getter(AccessLevel.PUBLIC)
@@ -87,24 +71,33 @@ public final class SimpleCommandManager {
         this.exceptionHandlers = new HashMap<>();
         this.completionsProviders = new HashMap<>();
         this.that = this;
-        // adding default parsers
-        argumentParsers.put(String.class, StringArgument.INSTANCE);
-        argumentParsers.put(Integer.class, IntegerArgument.INSTANCE);
-        argumentParsers.put(Double.class, DoubleArgument.INSTANCE);
-        argumentParsers.put(Float.class, DoubleArgument.INSTANCE);
-        argumentParsers.put(Boolean.class, DoubleArgument.INSTANCE);
-        argumentParsers.put(Component.class, ComponentArgument.INSTANCE);
-        argumentParsers.put(TextComponent.class, ComponentArgument.INSTANCE);
-        argumentParsers.put(Player.class, PlayerArgument.INSTANCE);
-        argumentParsers.put(Material.class, MaterialArgument.INSTANCE);
-        argumentParsers.put(Enchantment.class, EnchantmentArgument.INSTANCE);
-        argumentParsers.put(EntityType.class, EntityTypeArgument.INSTANCE);
-        argumentParsers.put(Position.class, PositionArgument.INSTANCE);
-        completionsProviders.put(Player.class, PlayerArgument.INSTANCE);
-        completionsProviders.put(Material.class, MaterialArgument.INSTANCE);
-        completionsProviders.put(Enchantment.class, EnchantmentArgument.INSTANCE);
-        completionsProviders.put(EntityType.class, EntityTypeArgument.INSTANCE);
-        completionsProviders.put(Position.class, PositionArgument.INSTANCE);
+        // java.lang.String
+        this.setArgumentParser(String.class, StringArgument.INSTANCE);
+        // java.lang.Integer
+        this.setArgumentParser(Integer.class, IntegerArgument.INSTANCE);
+        // java.lang.Float
+        this.setArgumentParser(Float.class, FloatArgument.INSTANCE);
+        // java.lang.Double
+        this.setArgumentParser(Double.class, DoubleArgument.INSTANCE);
+        // java.lang.Boolean
+        this.setArgumentParser(Boolean.class, BooleanArgument.INSTANCE);
+        // net.kyori.adventure.text.Component
+        this.setArgumentParser(Component.class, ComponentArgument.INSTANCE);
+        // org.bukkit.entity.Player
+        this.setArgumentParser(Player.class, PlayerArgument.INSTANCE);
+        this.setCompletionsProvider(Player.class, PlayerArgument.INSTANCE);
+        // org.bukkit.Material
+        this.setArgumentParser(Material.class, MaterialArgument.INSTANCE);
+        this.setCompletionsProvider(Material.class, MaterialArgument.INSTANCE);
+        // org.bukkit.enchantments.Enchantment
+        this.setArgumentParser(Enchantment.class, EnchantmentArgument.INSTANCE);
+        this.setCompletionsProvider(Enchantment.class, EnchantmentArgument.INSTANCE);
+        // org.bukkit.entity.EntityType
+        this.setArgumentParser(EntityType.class, EntityTypeArgument.INSTANCE);
+        this.setCompletionsProvider(EntityType.class, EntityTypeArgument.INSTANCE);
+        // io.papermc.paper.math.Position
+        this.setArgumentParser(Position.class, PositionArgument.INSTANCE);
+        this.setCompletionsProvider(Position.class, PositionArgument.INSTANCE);
     }
 
     /* COMMANDS */
@@ -175,7 +168,7 @@ public final class SimpleCommandManager {
         // registering command to the server
         plugin.getServer().getCommandMap().register(sCommand.getName(), bCommand);
 
-        // adding to the command set
+        // adding command to the set
         commands.add(sCommand);
     }
 
@@ -207,14 +200,6 @@ public final class SimpleCommandManager {
     /* ARGUMENT PARSER */
 
     /**
-     * Sets {@link ArgumentParser ArgumentParser&lt;T&gt;} (parser) as a default parser {@link T} (type).
-     * If a parser for this {@link T} (type) already exists - it gets overridden.
-     */
-     public <T> void setArgumentParser(final Class<T> type, final ArgumentParser<T> parser) {
-        argumentParsers.put(type, parser);
-    }
-
-    /**
      * Returns {@link ArgumentParser ArgumentParser&lt;T&gt;} for specified type.
      **
      * @apiNote This is internal API that can change at any time.
@@ -228,15 +213,15 @@ public final class SimpleCommandManager {
         throw new IncompatibleParserException(type);
     }
 
-    /* EXCEPTION HANDLER */
-
     /**
-     * Sets {@link ExceptionHandler ExceptionHandler&lt;E&gt;} (handler) as a default exception handler {@link E} (type).
-     * If a handler for this {@link E} (type) already exists - it gets overridden.
+     * Sets {@link ArgumentParser ArgumentParser&lt;T&gt;} (parser) as a default parser {@link T} (type).
+     * If a parser for this {@link T} (type) already exists - it gets overridden.
      */
-    public <E extends CommandLogicException> void setExceptionHandler(final Class<E> type, final ExceptionHandler<E> handler) {
-        exceptionHandlers.put(type, handler);
+     public <T> void setArgumentParser(final Class<T> type, final ArgumentParser<T> parser) {
+        argumentParsers.put(type, parser);
     }
+
+    /* EXCEPTION HANDLER */
 
     /**
      * Returns {@link ExceptionHandler ExceptionHandler&lt;E&gt;} for specified type, or default.
@@ -249,15 +234,15 @@ public final class SimpleCommandManager {
         return (ExceptionHandler<E>) exceptionHandlers.get(type);
     }
 
-    /* SUGGESTIONS PROVIDERS */
-
     /**
-     * Sets {@link CompletionsProvider CompletionsProvider} (provider) as a default suggestion provider {@link T} (type).
-     * If a provider for this {@link T} (type) already exists - it gets overridden.
+     * Sets {@link ExceptionHandler ExceptionHandler&lt;E&gt;} (handler) as a default exception handler {@link E} (type).
+     * If a handler for this {@link E} (type) already exists - it gets overridden.
      */
-    public <T> void setSuggestionProvider(final Class<T> type, final CompletionsProvider provider) {
-        completionsProviders.put(type, provider);
+    public <E extends CommandLogicException> void setExceptionHandler(final Class<E> type, final ExceptionHandler<E> handler) {
+        exceptionHandlers.put(type, handler);
     }
+
+    /* COMPLETIONS PROVIDER */
 
     /**
      * Returns {@link CompletionsProvider} for specified type, or {@link CompletionsProvider#EMPTY}.
@@ -265,8 +250,16 @@ public final class SimpleCommandManager {
      * @apiNote This is internal API that can change at any time.
      */
     @Internal
-    public <T> CompletionsProvider getSuggestionProvider(final Class<T> type) {
+    public <T> CompletionsProvider getCompletionsProvider(final Class<T> type) {
         return (completionsProviders.containsKey(type) == true) ? completionsProviders.get(type) : CompletionsProvider.EMPTY;
+    }
+
+    /**
+     * Sets {@link CompletionsProvider CompletionsProvider} (provider) as a default completions provider {@link T} (type).
+     * If a provider for this {@link T} (type) already exists - it gets overridden.
+     */
+    public <T> void setCompletionsProvider(final Class<T> type, final CompletionsProvider provider) {
+        completionsProviders.put(type, provider);
     }
 
     /* STATIC HELPERS */
