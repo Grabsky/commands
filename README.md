@@ -1,7 +1,7 @@
 # grabsky/commands
 [![](https://github.com/Grabsky/commands/actions/workflows/gradle.yml/badge.svg)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
 [![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It's still under development and **should not** be used on production servers.
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It is still under development and **should not** be used on production servers.
 
 <br />
 
@@ -40,4 +40,4 @@ $ ./gradlew clean test publishToMavenLocal
 <br />
 
 ## Contributing
-This project is open for contributions. Help in regards of improving performance, adding new features or fixing bugs are very appreciated.
+This project is open for contributions. Help in regards of improving performance, adding new features or fixing bugs is greatly appreciated.
