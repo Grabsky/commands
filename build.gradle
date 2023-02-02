@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'com.palantir.git-version' version '0.15.0'
 }
 
 group = 'cloud.grabsky'
@@ -11,6 +10,7 @@ sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 final isSnapshot = version.endsWith('-SNAPSHOT')
+final hash7 = 'git rev-parse --verify --short HEAD'.execute().text.trim()
 
 publishing {
     repositories {
@@ -27,7 +27,7 @@ publishing {
     publications {
         maven(MavenPublication) {
             artifactId rootProject.name
-            version (isSnapshot == true ? versionDetails().gitHash : version)
+            version (isSnapshot == true ? hash7 : version)
             from components.java
         }
     }
