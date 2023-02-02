@@ -30,11 +30,11 @@ Use **[relocation](https://imperceptiblethoughts.com/shadow/configuration/reloca
 ## Building (Linux)
 ```bash
 # Cloning repository
-$ git clone https://github.com/Grabsky/configuration.git
+$ git clone https://github.com/Grabsky/commands.git
 # Entering cloned repository
 $ cd ./configuration
 # Compiling and publishing to maven local
-$ ./gradlew clean test publishToMavenLocal
+$ ./gradlew clean publishToMavenLocal
 ```
 
 <br />
