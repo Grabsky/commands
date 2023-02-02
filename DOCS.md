@@ -9,7 +9,7 @@ IntegerArgument             (Integer)                       [default = true]
 FloatArgument               (Float)                         [default = true]
 DoubleArgument              (Double)                        [default = true]
    
-ComponentArgument           (Component, TextComponent)      [default = true]
+ComponentArgument           (Component)                     [default = true]
 EnchantmentArgument         (Enchantment)                   [default = true]
 EntityTypeArgument          (EntityType)                    [default = true]
 MaterialArgument            (Material)                      [default = true]
@@ -17,11 +17,11 @@ PlayerArgument              (Player)                        [default = true]
 PositionArgument            (Position)                      [default = true]
 
 GreedyStringArgument        (String)                        [default = false]
-GreedyComponentArgument     (Component, TextComponent)      [default = false]
+GreedyComponentArgument     (Component)                     [default = false]
 ```
 Using non-default argument parsers:
 ```java
-public void onCommand(final SimpleCommandContext context, final ArgumentQueue arguments) {
+public void onCommand(final RootCommandContext context, final ArgumentQueue arguments) {
     // getting raw (base) sender instance
     final CommandSender sender = context.getExecutor().raw();
     // getting next parameter as "greedy" string by specifying argument parser

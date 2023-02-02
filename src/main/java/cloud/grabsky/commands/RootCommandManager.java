@@ -50,21 +50,20 @@ import java.util.*;
 
 // TO-DO: Finish JavaDocs and GitHub documentation.
 // TO-DO: ArgumentQueue#peek
-// TO-DO: Better naming? "Simple" was a development placeholder.
 // TO-DO: More testing and improvements based on Q/A results.
-public final class SimpleCommandManager {
+public final class RootCommandManager {
 
     @Getter(AccessLevel.PUBLIC)
     private final Plugin plugin;
 
-    private final Set<SimpleCommand> commands;
+    private final Set<RootCommand> commands;
     private final Map<Class<?>, ArgumentParser<?>> argumentParsers;
     private final Map<Class<?>, ExceptionHandler<?>> exceptionHandlers;
     private final Map<Class<?>, CompletionsProvider> completionsProviders;
 
-    private final SimpleCommandManager that;
+    private final RootCommandManager that;
 
-    public SimpleCommandManager(final Plugin plugin) {
+    public RootCommandManager(final Plugin plugin) {
         this.plugin = plugin;
         this.commands = new HashSet<>();
         this.argumentParsers = new HashMap<>();
@@ -103,15 +102,15 @@ public final class SimpleCommandManager {
     /* COMMANDS */
 
     /**
-     * Registers command from provided {@link SimpleCommand} instance.
+     * Registers command from provided {@link RootCommand} instance.
      */
-    public void registerCommand(final SimpleCommand sCommand) {
+    public void registerCommand(final RootCommand sCommand) {
 
         final Command bCommand = new Command(sCommand.getName()) {
 
             @Override @SuppressWarnings({"unchecked", "rawtypes"})
             public boolean execute(@NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args) {
-                final SimpleCommandContext context = new SimpleCommandContext(that, sCommand, new SimpleCommandExecutor(sender), label, toStringInput(label, args));
+                final RootCommandContext context = new RootCommandContext(that, sCommand, new RootCommandExecutor(sender), label, toStringInput(label, args));
                 final ArgumentQueue queue = new ArgumentQueue(context, Arrays.toArrayList(args));
                 // handling command logic (and exceptions)
                 try {
@@ -141,7 +140,7 @@ public final class SimpleCommandManager {
                     return Arrays.EMPTY_STRING_LIST;
                 }
                 // handling
-                final SimpleCommandContext context = new SimpleCommandContext(that, sCommand, new SimpleCommandExecutor(sender), alias, toStringInput(alias, args));
+                final RootCommandContext context = new RootCommandContext(that, sCommand, new RootCommandExecutor(sender), alias, toStringInput(alias, args));
                 // returning filtered list
                 try {
                     return toFilteredList(sCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
@@ -178,9 +177,9 @@ public final class SimpleCommandManager {
      *
      * @throws IllegalArgumentException if class is inaccessible or cannot be initialized.
      */
-    public <T extends SimpleCommand> void registerCommand(final Class<T> commandClass) throws IllegalArgumentException {
+    public <T extends RootCommand> void registerCommand(final Class<T> commandClass) throws IllegalArgumentException {
         try {
-            final SimpleCommand commandObject = (commandClass.isEnum() == true)
+            final RootCommand commandObject = (commandClass.isEnum() == true)
                     ? commandClass.getEnumConstants()[0]
                     : commandClass.getConstructor().newInstance();
             // registering...
@@ -193,7 +192,7 @@ public final class SimpleCommandManager {
     /**
      * Returns an unmodifiable copy of {@link HashSet} containing all commands registered by this manager.
      */
-    public Set<SimpleCommand> getCommands() {
+    public Set<RootCommand> getCommands() {
         return Collections.unmodifiableSet(commands);
     }
 

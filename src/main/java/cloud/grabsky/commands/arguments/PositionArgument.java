@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
@@ -42,7 +42,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final SimpleCommandContext context) {
+    public List<String> provide(final RootCommandContext context) {
         final Location location = context.getExecutor().as(Player.class).asRequired().getLocation();
         return Collections.singletonList(new StringBuilder()
                 .append(toRoundedDouble(location.x()))
@@ -55,7 +55,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     }
 
     @Override
-    public Position parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
+    public Position parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
         final Double x = queue.next(Double.class).asOptional();
         final Double y = queue.next(Double.class).asOptional();
         final Double z = queue.next(Double.class).asOptional();

@@ -25,7 +25,7 @@ package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
@@ -42,12 +42,12 @@ public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<E
             .toList();
 
     @Override
-    public List<String> provide(final SimpleCommandContext context) {
+    public List<String> provide(final RootCommandContext context) {
         return MINECRAFT_ENCHANTMENT_NAMES;
     }
 
     @Override
-    public Enchantment parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
+    public Enchantment parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
         final String value = queue.next();
         final Enchantment enchantment = Registries.ENCHANTMENT.get(value);
         // ...

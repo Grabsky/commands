@@ -23,10 +23,10 @@
  */
 package cloud.grabsky.commands.components;
 
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 
 import java.util.function.Predicate;
 
 @Experimental
-public interface CommandCondition extends Predicate<SimpleCommandContext> { /* EMPTY */ }
+public interface CommandCondition extends Predicate<RootCommandContext> { /* EMPTY */ }

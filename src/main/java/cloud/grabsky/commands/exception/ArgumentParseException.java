@@ -23,8 +23,8 @@
  */
 package cloud.grabsky.commands.exception;
 
-import cloud.grabsky.commands.SimpleCommandContext;
-import cloud.grabsky.commands.SimpleCommandExecutor;
+import cloud.grabsky.commands.RootCommandContext;
+import cloud.grabsky.commands.RootCommandExecutor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
@@ -52,7 +52,7 @@ public class ArgumentParseException extends CommandLogicException {
 
     /**
      * Returns final (non-overridable) {@link ArgumentParseException} which sends
-     * {@link Component} (error) message to {@link SimpleCommandExecutor}.
+     * {@link Component} (error) message to {@link RootCommandExecutor}.
      *
      * @apiNote This is internal API that can change at any time.
      */
@@ -66,7 +66,7 @@ public class ArgumentParseException extends CommandLogicException {
             }
 
             @Override
-            public void accept(final SimpleCommandContext context) {
+            public void accept(final RootCommandContext context) {
                 context.getExecutor().raw().sendMessage(message);
             }
 

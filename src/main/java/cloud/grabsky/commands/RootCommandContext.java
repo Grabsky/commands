@@ -36,16 +36,16 @@ import org.jetbrains.annotations.ApiStatus.Experimental;
 import java.lang.reflect.InvocationTargetException;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class SimpleCommandContext {
+public final class RootCommandContext {
 
     @Getter(AccessLevel.PUBLIC)
-    private final SimpleCommandManager manager;
+    private final RootCommandManager manager;
 
     @Getter(AccessLevel.PUBLIC)
-    private final SimpleCommand command;
+    private final RootCommand command;
 
     @Getter(AccessLevel.PUBLIC)
-    private final SimpleCommandExecutor executor;
+    private final RootCommandExecutor executor;
 
     @Getter(AccessLevel.PUBLIC)
     private final String label;

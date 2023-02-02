@@ -25,7 +25,7 @@ package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.IncompatibleSenderException;
@@ -41,7 +41,7 @@ public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final SimpleCommandContext context) {
+    public List<String> provide(final RootCommandContext context) {
         return (context.getExecutor().raw() instanceof Player sender)
                 ? Stream.concat(Bukkit.getOnlinePlayers().stream()
                         .filter(sender::canSee) // vanish support
@@ -52,7 +52,7 @@ public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player
     }
 
     @Override
-    public Player parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
+    public Player parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
         final String value = queue.next();
         // ...
         final Player player = (value.equalsIgnoreCase("@s") && context.getExecutor().raw() instanceof Player sender)

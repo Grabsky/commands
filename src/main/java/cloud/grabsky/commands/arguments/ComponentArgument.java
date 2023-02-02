@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import net.kyori.adventure.text.Component;
@@ -36,7 +36,7 @@ public enum ComponentArgument implements ArgumentParser<Component> {
     private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
     @Override
-    public Component parse(final SimpleCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+    public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
         return MINI_MESSAGE.deserialize(queue.next());
     }
 

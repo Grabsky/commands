@@ -39,7 +39,7 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public final class ArgumentQueue {
 
-    private final SimpleCommandContext context;
+    private final RootCommandContext context;
     private final List<String> arguments;
 
     /**

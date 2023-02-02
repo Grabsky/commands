@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.components;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 
@@ -34,6 +34,6 @@ import cloud.grabsky.commands.exception.MissingInputException;
  */
 public interface ArgumentParser<T> {
 
-    T parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException;
+    T parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException;
 
 }

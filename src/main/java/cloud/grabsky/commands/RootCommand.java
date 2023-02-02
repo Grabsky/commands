@@ -31,10 +31,10 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * {@link SimpleCommand} represents a server command.
+ * {@link RootCommand} represents a server command.
  */
 @RequiredArgsConstructor(access = AccessLevel.PUBLIC)
-public abstract class SimpleCommand {
+public abstract class RootCommand {
 
     @Getter(AccessLevel.PUBLIC)
     private final String name;
@@ -56,7 +56,7 @@ public abstract class SimpleCommand {
      *
      * @apiNote {@link CommandLogicException} should not be caught here.
      */
-    public CompletionsProvider onTabComplete(final SimpleCommandContext context, final int index) {
+    public CompletionsProvider onTabComplete(final RootCommandContext context, final int index) {
         return CompletionsProvider.EMPTY; // commands have no completions by default
     }
 
@@ -65,6 +65,6 @@ public abstract class SimpleCommand {
      *
      * @apiNote {@link CommandLogicException} should not be caught here.
      */
-    public abstract void onCommand(final SimpleCommandContext context, final ArgumentQueue arguments) throws CommandLogicException;
+    public abstract void onCommand(final RootCommandContext context, final ArgumentQueue arguments) throws CommandLogicException;
 
 }

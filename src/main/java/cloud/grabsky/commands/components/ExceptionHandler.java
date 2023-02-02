@@ -23,16 +23,16 @@
  */
 package cloud.grabsky.commands.components;
 
-import cloud.grabsky.commands.SimpleCommand;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommand;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.CommandLogicException;
 
 /**
  * {@link ExceptionHandler ExceptionHandler&lt;E&gt;} defines what happens when
- * {@link E} exception is thrown inside {@link SimpleCommand#onCommand}.
+ * {@link E} exception is thrown inside {@link RootCommand#onCommand}.
  */
 public interface ExceptionHandler<E extends CommandLogicException> {
 
-    void handle(final E exception, final SimpleCommandContext context);
+    void handle(final E exception, final RootCommandContext context);
 
 }

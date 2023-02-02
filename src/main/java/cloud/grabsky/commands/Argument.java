@@ -37,11 +37,11 @@ import org.jetbrains.annotations.Nullable;
 public final class Argument<T> implements RequiredElement<T>, OptionalElement<T> {
 
     private final Class<T> type;
-    private final SimpleCommandContext context;
+    private final RootCommandContext context;
     private final ArgumentQueue queue;
     private final ArgumentParser<T> parser; // can be null
 
-    public Argument(final Class<T> type, final SimpleCommandContext context, final ArgumentQueue queue) {
+    public Argument(final Class<T> type, final RootCommandContext context, final ArgumentQueue queue) {
         this.type = type;
         this.context = context;
         this.queue = queue;

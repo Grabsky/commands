@@ -32,7 +32,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class SimpleCommandExecutor {
+public final class RootCommandExecutor {
 
     private final CommandSender sender;
 

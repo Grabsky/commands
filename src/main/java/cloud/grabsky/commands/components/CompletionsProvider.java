@@ -23,7 +23,7 @@
  */
 package cloud.grabsky.commands.components;
 
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.util.Arrays;
 
 import java.util.List;
@@ -36,7 +36,7 @@ import static cloud.grabsky.commands.util.Arrays.toArrayList;
  */
 public interface CompletionsProvider {
 
-    List<String> provide(final SimpleCommandContext context);
+    List<String> provide(final RootCommandContext context);
 
     /**
      * Returns instance of {@link CompletionsProvider} that provides no completions.

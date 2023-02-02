@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 
@@ -32,7 +32,7 @@ public enum StringArgument implements ArgumentParser<String> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public String parse(final SimpleCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+    public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
         return queue.next();
     }
 

@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
@@ -33,7 +33,7 @@ public enum BooleanArgument implements ArgumentParser<Boolean> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Boolean parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
+    public Boolean parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
         final String value = queue.next();
         // ...
         return switch (value.toLowerCase()) {

@@ -23,8 +23,8 @@
  */
 package cloud.grabsky.commands.exception;
 
-import cloud.grabsky.commands.SimpleCommandContext;
-import cloud.grabsky.commands.SimpleCommandExecutor;
+import cloud.grabsky.commands.RootCommandContext;
+import cloud.grabsky.commands.RootCommandExecutor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -44,7 +44,7 @@ import static org.jetbrains.annotations.ApiStatus.Internal;
  * @see IncompatibleSenderException
  * @see MissingInputException
  */
-public class CommandLogicException extends RuntimeException implements Consumer<SimpleCommandContext> {
+public class CommandLogicException extends RuntimeException implements Consumer<RootCommandContext> {
 
     public CommandLogicException() {
         super();
@@ -55,7 +55,7 @@ public class CommandLogicException extends RuntimeException implements Consumer<
     }
 
     @Override
-    public void accept(final SimpleCommandContext context) {
+    public void accept(final RootCommandContext context) {
         context.getExecutor().raw().sendMessage(text("An error occurred while executing the command. (" + this.getClass().getSimpleName() + ")", NamedTextColor.RED));
     }
 
@@ -71,7 +71,7 @@ public class CommandLogicException extends RuntimeException implements Consumer<
 
     /**
      * Returns final (non-overridable) {@link CommandLogicException} which sends
-     * {@link Component} (error) message to {@link SimpleCommandExecutor}.
+     * {@link Component} (error) message to {@link RootCommandExecutor}.
      *
      * @apiNote This is internal API that can change at any time.
      */
@@ -85,7 +85,7 @@ public class CommandLogicException extends RuntimeException implements Consumer<
             }
 
             @Override
-            public void accept(final SimpleCommandContext context) {
+            public void accept(final RootCommandContext context) {
                 context.getExecutor().raw().sendMessage(message);
             }
 

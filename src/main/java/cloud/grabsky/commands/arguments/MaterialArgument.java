@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
@@ -42,12 +42,12 @@ public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Mate
             .toList();
 
     @Override
-    public List<String> provide(final SimpleCommandContext context) {
+    public List<String> provide(final RootCommandContext context) {
         return MINECRAFT_MATERIAL_NAMES;
     }
 
     @Override
-    public Material parse(final SimpleCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
+    public Material parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
         final String value = queue.next();
         final Material material = Registries.MATERIAL.get(value);
         // ...

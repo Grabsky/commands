@@ -24,7 +24,7 @@
 package cloud.grabsky.commands.arguments;
 
 import cloud.grabsky.commands.ArgumentQueue;
-import cloud.grabsky.commands.SimpleCommandContext;
+import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
@@ -33,7 +33,7 @@ public enum FloatArgument implements ArgumentParser<Float> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Float parse(final SimpleCommandContext context, final ArgumentQueue queue) throws NumberParseException, MissingInputException {
+    public Float parse(final RootCommandContext context, final ArgumentQueue queue) throws NumberParseException, MissingInputException {
         final String value = queue.next();
         try {
             return Float.parseFloat(value);
