@@ -26,14 +26,25 @@ package cloud.grabsky.commands.arguments;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
+import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.MissingInputException;
+
+import java.util.List;
 
 /**
  * Converts literal to {@link Boolean}.
  */
-public enum BooleanArgument implements ArgumentParser<Boolean> {
+public enum BooleanArgument implements CompletionsProvider, ArgumentParser<Boolean> {
     /* SINGLETON */ INSTANCE;
+
+    private static final List<String> BOOLEAN_NAMES = List.of("true", "false");
+
+    @Override
+    public List<String> provide(final RootCommandContext context) throws CommandLogicException {
+        return BOOLEAN_NAMES;
+    }
 
     @Override
     public Boolean parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {

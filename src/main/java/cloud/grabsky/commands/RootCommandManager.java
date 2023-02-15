@@ -86,6 +86,7 @@ public final class RootCommandManager {
         this.setArgumentParser(Double.class, DoubleArgument.INSTANCE);
         // java.lang.Boolean
         this.setArgumentParser(Boolean.class, BooleanArgument.INSTANCE);
+        this.setCompletionsProvider(Boolean.class, BooleanArgument.INSTANCE);
         // net.kyori.adventure.text.Component
         this.setArgumentParser(Component.class, ComponentArgument.LITERAL);
         // org.bukkit.entity.Player
