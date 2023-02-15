@@ -46,7 +46,7 @@ public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
     }
 
     /**
-     * {@link NamespacedKeyParseException} is thrown when invalid key is provided for {@link NamespacedKey} argument type.
+     * {@link NamespacedKeyParseException} is thrown when invalid value is provided for {@link NamespacedKey} argument type.
      */
     public static final class NamespacedKeyParseException extends ArgumentParseException {
 

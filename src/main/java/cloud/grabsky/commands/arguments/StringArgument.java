@@ -28,7 +28,6 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 
-
 public enum StringArgument implements ArgumentParser<String> {
 
     /**
@@ -44,7 +43,7 @@ public enum StringArgument implements ArgumentParser<String> {
     },
 
     /**
-     * Converts remaining literals to {@link String} joined with space ({@code " "}).
+     * Converts remaining literals, joined with space, to {@link String}.
      */
     GREEDY {
 

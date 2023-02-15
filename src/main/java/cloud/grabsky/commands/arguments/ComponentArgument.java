@@ -47,7 +47,7 @@ public enum ComponentArgument implements ArgumentParser<Component> {
     },
 
     /**
-     * Converts remaining literals to {@link Component} joined with space ({@code " "}), parsed using {@link MiniMessage} serializer.
+     * Converts remaining literals, joined with space, to {@link Component} parsed using {@link MiniMessage} serializer.
      */
     GREEDY {
 
