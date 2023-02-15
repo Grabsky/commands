@@ -3,6 +3,8 @@
 [![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
 Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It is still under development and **should not** be used on production servers.
 
+Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
+
 <br />
 
 ## Requirements
