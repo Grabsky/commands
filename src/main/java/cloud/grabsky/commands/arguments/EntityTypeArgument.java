@@ -34,6 +34,9 @@ import org.bukkit.entity.EntityType;
 
 import java.util.List;
 
+/**
+ * Converts literal to {@link EntityType}.
+ */
 public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<EntityType> {
     /* SINGLETON */ INSTANCE;
 

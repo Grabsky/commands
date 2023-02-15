@@ -24,6 +24,7 @@
 package cloud.grabsky.commands.components;
 
 import cloud.grabsky.commands.RootCommandContext;
+import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.util.Arrays;
 
 import java.util.List;
@@ -36,7 +37,7 @@ import static cloud.grabsky.commands.util.Arrays.toArrayList;
  */
 public interface CompletionsProvider {
 
-    List<String> provide(final RootCommandContext context);
+    List<String> provide(final RootCommandContext context) throws CommandLogicException;
 
     /**
      * Returns instance of {@link CompletionsProvider} that provides no completions.

@@ -42,9 +42,9 @@ public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player
 
     @Override
     public List<String> provide(final RootCommandContext context) {
-        return (context.getExecutor().raw() instanceof Player sender)
+        return (context.getExecutor().isPlayer() == true)
                 ? Stream.concat(Bukkit.getOnlinePlayers().stream()
-                        .filter(sender::canSee) // vanish support
+                        .filter((player) -> context.getExecutor().asPlayer().canSee(player)) // basic vanish support
                         .map(Player::getName), Stream.of("@s")).toList()
                 : Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
@@ -55,8 +55,8 @@ public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player
     public Player parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
         final String value = queue.next();
         // ...
-        final Player player = (value.equalsIgnoreCase("@s") && context.getExecutor().raw() instanceof Player sender)
-                ? sender
+        final Player player = (value.equalsIgnoreCase("@s") && context.getExecutor().isPlayer() == true)
+                ? context.getExecutor().asPlayer()
                 : Bukkit.getPlayer(value);
         // ...
         if (player != null)

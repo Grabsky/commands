@@ -35,6 +35,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -47,7 +48,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.function.Consumer;
 
+/**
+ * {@link RootCommandManager} represents a command manager where you can register
+ * your commands and customize their handling process
+ */
 // TO-DO: Finish JavaDocs and GitHub documentation.
 // TO-DO: ArgumentQueue#peek
 // TO-DO: More testing and improvements based on Q/A results.
@@ -71,7 +77,7 @@ public final class RootCommandManager {
         this.completionsProviders = new HashMap<>();
         this.that = this;
         // java.lang.String
-        this.setArgumentParser(String.class, StringArgument.INSTANCE);
+        this.setArgumentParser(String.class, StringArgument.LITERAL);
         // java.lang.Integer
         this.setArgumentParser(Integer.class, IntegerArgument.INSTANCE);
         // java.lang.Float
@@ -81,7 +87,7 @@ public final class RootCommandManager {
         // java.lang.Boolean
         this.setArgumentParser(Boolean.class, BooleanArgument.INSTANCE);
         // net.kyori.adventure.text.Component
-        this.setArgumentParser(Component.class, ComponentArgument.INSTANCE);
+        this.setArgumentParser(Component.class, ComponentArgument.LITERAL);
         // org.bukkit.entity.Player
         this.setArgumentParser(Player.class, PlayerArgument.INSTANCE);
         this.setCompletionsProvider(Player.class, PlayerArgument.INSTANCE);
@@ -97,6 +103,8 @@ public final class RootCommandManager {
         // io.papermc.paper.math.Position
         this.setArgumentParser(Position.class, PositionArgument.INSTANCE);
         this.setCompletionsProvider(Position.class, PositionArgument.INSTANCE);
+        // org.bukkit.NamespacedKey
+        this.setArgumentParser(NamespacedKey.class, NamespacedKeyArgument.INSTANCE);
     }
 
     /* COMMANDS */
@@ -104,17 +112,17 @@ public final class RootCommandManager {
     /**
      * Registers command from provided {@link RootCommand} instance.
      */
-    public void registerCommand(final RootCommand sCommand) {
+    public void registerCommand(final RootCommand rCommand) {
 
-        final Command bCommand = new Command(sCommand.getName()) {
+        final Command bCommand = new Command(rCommand.getName()) {
 
             @Override @SuppressWarnings({"unchecked", "rawtypes"})
             public boolean execute(@NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args) {
-                final RootCommandContext context = new RootCommandContext(that, sCommand, new RootCommandExecutor(sender), label, toStringInput(label, args));
+                final RootCommandContext context = new RootCommandContext(that, rCommand, new RootCommandExecutor(sender), new RootCommandInput(label, args));
                 final ArgumentQueue queue = new ArgumentQueue(context, Arrays.toArrayList(args));
                 // handling command logic (and exceptions)
                 try {
-                    sCommand.onCommand(context, queue);
+                    rCommand.onCommand(context, queue);
                     return true;
                 } catch (final CommandLogicException exc) {
                     final Class<? extends CommandLogicException> exceptionClass = exc.getClass();
@@ -135,15 +143,19 @@ public final class RootCommandManager {
 
             @Override
             public @NotNull List<String> tabComplete(@NotNull final CommandSender sender, @NotNull final String alias, @NotNull final String[] args) throws IllegalArgumentException {
+                final double s1 = System.nanoTime();
                 // disabling completions for invalid input
                 if (args.length > 1 && args[args.length - 2].isEmpty() == true) {
                     return Arrays.EMPTY_STRING_LIST;
                 }
                 // handling
-                final RootCommandContext context = new RootCommandContext(that, sCommand, new RootCommandExecutor(sender), alias, toStringInput(alias, args));
+                final RootCommandContext context = new RootCommandContext(that, rCommand, new RootCommandExecutor(sender), new RootCommandInput(alias, args));
                 // returning filtered list
                 try {
-                    return toFilteredList(sCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
+                    final List<String> list = toFilteredList(rCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
+                    final double s2 = System.nanoTime();
+                    // System.out.println("Operation took " + (s2 - s1) / 1000000D + "ms");
+                    return list;
                 } catch (final CommandLogicException exc) {
                     return Arrays.EMPTY_STRING_LIST;
                 }
@@ -151,24 +163,24 @@ public final class RootCommandManager {
 
         };
 
-        if (sCommand.getAliases() != null && sCommand.getAliases().length > 0)
-            bCommand.setAliases(Arrays.toArrayList(sCommand.getAliases()));
+        if (rCommand.getAliases() != null && rCommand.getAliases().length > 0)
+            bCommand.setAliases(Arrays.toArrayList(rCommand.getAliases()));
 
-        if (sCommand.getPermission() != null)
-            bCommand.setPermission(sCommand.getPermission());
+        if (rCommand.getPermission() != null)
+            bCommand.setPermission(rCommand.getPermission());
 
-        if (sCommand.getUsage() != null)
-            bCommand.setUsage(sCommand.getUsage());
+        if (rCommand.getUsage() != null)
+            bCommand.setUsage(rCommand.getUsage());
 
-        if (sCommand.getDescription() != null) {
-            bCommand.setDescription(sCommand.getDescription());
+        if (rCommand.getDescription() != null) {
+            bCommand.setDescription(rCommand.getDescription());
         }
 
         // registering command to the server
-        plugin.getServer().getCommandMap().register(sCommand.getName(), bCommand);
+        plugin.getServer().getCommandMap().register(plugin.getName(), bCommand);
 
         // adding command to the set
-        commands.add(sCommand);
+        commands.add(rCommand);
     }
 
     /**
@@ -261,17 +273,14 @@ public final class RootCommandManager {
         completionsProviders.put(type, provider);
     }
 
-    /* STATIC HELPERS */
-
-    private static String toStringInput(final String label, final String[] arguments) {
-        final StringBuilder input = new StringBuilder(label);
-        // ...
-        for (final String argument : arguments)
-            if (argument != null && argument.isEmpty() == false)
-                input.append(" ").append(argument);
-        // ...
-        return input.toString();
+    /**
+     * Apply {@link Consumer<RootCommandManager>} template on this {@link RootCommandManager}.
+     */
+    public void apply(final Consumer<RootCommandManager> template) {
+        template.accept(this);
     }
+
+    /* STATIC HELPERS */
 
     private static List<String> toFilteredList(final List<String> list, final String input) {
         return list.stream()

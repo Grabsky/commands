@@ -24,22 +24,14 @@
 package cloud.grabsky.commands.components;
 
 import cloud.grabsky.commands.exception.CommandLogicException;
-import net.kyori.adventure.text.Component;
 
 public interface RequiredElement<T> {
 
     /**
-     * Tries to resolve and return {@link T} element, or throw {@link CommandLogicException} on failure.
+     * Tries to parse and return {@link T} element, or throw {@link CommandLogicException} on failure.
      *
      * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
      */
     T asRequired() throws CommandLogicException;
-
-    /**
-     * Tries to resolve and return {@link T} element, or send {@link Component} error message on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
-     */
-    T asRequired(final Component errorMessage);
 
 }

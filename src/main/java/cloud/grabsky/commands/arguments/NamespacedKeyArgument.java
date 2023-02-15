@@ -26,24 +26,38 @@ package cloud.grabsky.commands.arguments;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.NamespacedKey;
 
-public enum GreedyComponentArgument implements ArgumentParser<Component> {
+public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
     /* SINGLETON */ INSTANCE;
 
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-
     @Override
-    public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-        final StringBuilder builder = new StringBuilder(queue.next());
-        // appending arguments till the end of input
-        while (queue.hasNext() == true) {
-            builder.append(" ").append(queue.next());
+    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
+        final String value = queue.next();
+        // ...
+        final NamespacedKey key = NamespacedKey.fromString(value);
+        // ...
+        if (key != null)
+            return key;
+        // ...
+        throw new NamespacedKeyParseException(value);
+    }
+
+    /**
+     * {@link NamespacedKeyParseException} is thrown when invalid key is provided for {@link NamespacedKey} argument type.
+     */
+    public static final class NamespacedKeyParseException extends ArgumentParseException {
+
+        public NamespacedKeyParseException(final String inputValue) {
+            super(inputValue);
         }
-        // serializing and returning
-        return MINI_MESSAGE.deserialize(builder.toString());
+
+        public NamespacedKeyParseException(final String inputValue, final Throwable cause) {
+            super(inputValue, cause);
+        }
+
     }
 
 }

@@ -50,7 +50,8 @@ public final class ArgumentQueue {
     }
 
     /**
-     * Returns {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} type.
+     * Returns and removes next element at the beginning of this {@link ArgumentQueue}
+     * as an {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} {@code type}.
      * <br />
      * <br />
      * You should process the argument <b><u>immediately</u></b> after it is returned.
@@ -58,22 +59,21 @@ public final class ArgumentQueue {
      * <br />
      * <pre>
      * // DO NOT DO THAT
-     * final Argument&lt;Player&gt; arg0 = queue.next(Player.class);
-     * final Argument&lt;Player&gt; arg1 = queue.next(Player.class);
+     * final Argument&lt;Player&gt; arg = arguments.next(Player.class);
      *
      * // DO THAT INSTEAD
-     * final Player arg0 = queue.next(Player.class).get();
-     * final Player arg1 = queue.next(Player.class).get();
+     * final Player target = arguments.next(Player.class).asRequired();
      * </pre>
      * Doing otherwise, will most likely cause loss of the desired argument order.
      */
     public <T> Argument<T> next(final Class<T> type) {
-        return new Argument<T>(type, context, this);
+        return new Argument<T>(type, context, this, null);
     }
 
     /**
-     * Returns {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} type,
-     * with exclusively specified {@link ArgumentParser ArgumentParser&lt;T&gt;}.
+     * Returns and removes next element at the beginning of this {@link ArgumentQueue},
+     * as an {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} {@code type},
+     * with exclusively specified {@link ArgumentParser ArgumentParser&lt;T&gt;} {@code parser}.
      * <br />
      * <br />
      * You should process the argument <b><u>immediately</u></b> after it is returned.
@@ -81,10 +81,10 @@ public final class ArgumentQueue {
      * <br />
      * <pre>
      * // DO NOT DO THAT
-     * final Argument&lt;Player&gt; arg0 = queue.next(Player.class);
+     * final Argument&lt;Player&gt; arg = arguments.next(Player.class);
      *
      * // DO THAT INSTEAD
-     * final Player arg0 = queue.next(Player.class).get();
+     * final Player target = arguments.next(Player.class).asRequired();
      * </pre>
      * Doing otherwise, will most likely cause loss of the desired argument order.
      */

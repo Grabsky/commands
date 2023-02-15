@@ -56,7 +56,7 @@ public class CommandLogicException extends RuntimeException implements Consumer<
 
     @Override
     public void accept(final RootCommandContext context) {
-        context.getExecutor().raw().sendMessage(text("An error occurred while executing the command. (" + this.getClass().getSimpleName() + ")", NamedTextColor.RED));
+        context.getExecutor().asCommandSender().sendMessage(text("An error occurred while executing the command. (" + this.getClass().getSimpleName() + ")", NamedTextColor.RED));
     }
 
     /**
@@ -86,7 +86,7 @@ public class CommandLogicException extends RuntimeException implements Consumer<
 
             @Override
             public void accept(final RootCommandContext context) {
-                context.getExecutor().raw().sendMessage(message);
+                context.getExecutor().asCommandSender().sendMessage(message);
             }
 
         };

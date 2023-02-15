@@ -26,14 +26,14 @@ package cloud.grabsky.commands.components;
 public interface OptionalElement<T> {
 
     /**
-     * Tries to resolve and return {@link T} element, or {@code null} on failure.
+     * Tries to parse and return {@link T} element, or {@code null} on failure.
      *
      * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
      */
     T asOptional();
 
     /**
-     * Tries to resolve and return {@link T} element, or {@code def} on failure.
+     * Tries to parse and return {@link T} element, or {@code def} on failure.
      *
      * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
      */

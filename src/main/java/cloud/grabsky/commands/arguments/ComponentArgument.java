@@ -31,13 +31,39 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 
 public enum ComponentArgument implements ArgumentParser<Component> {
-    /* SINGLETON */ INSTANCE;
 
-    private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+    /**
+     * Converts literal to {@link Component} parsed using {@link MiniMessage} serializer.
+     */
+    LITERAL {
 
-    @Override
-    public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-        return MINI_MESSAGE.deserialize(queue.next());
+        private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+
+        @Override
+        public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+            return MINI_MESSAGE.deserialize(queue.next());
+        }
+
+    },
+
+    /**
+     * Converts remaining literals to {@link Component} joined with space ({@code " "}), parsed using {@link MiniMessage} serializer.
+     */
+    GREEDY {
+
+        private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
+
+        @Override
+        public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+            final StringBuilder builder = new StringBuilder(queue.next());
+            // appending arguments till the end of input
+            while (queue.hasNext() == true) {
+                builder.append(" ").append(queue.next());
+            }
+            // serializing and returning
+            return MINI_MESSAGE.deserialize(builder.toString());
+        }
+
     }
 
 }

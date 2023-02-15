@@ -23,50 +23,85 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.RequiredElement;
 import cloud.grabsky.commands.exception.IncompatibleSenderException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * {@link RootCommandExecutor} represents command executor.
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class RootCommandExecutor {
 
     private final CommandSender sender;
 
-    public CommandSender raw() {
+    /**
+     * Returns underlying command executor {@link CommandSender}.
+     */
+    public @NotNull CommandSender asCommandSender() {
         return sender;
     }
 
-    public <T extends CommandSender> Wrapper<T> as(@NotNull final Class<T> type) {
-        return new Wrapper<T>(sender, type);
+    /**
+     * Returns {@code true} if underlying command executor is a {@link Player}.
+     */
+    public boolean isPlayer() {
+        return sender instanceof Player;
     }
 
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class Wrapper<T extends CommandSender> implements RequiredElement<T> {
-
-        private final CommandSender sender;
-        private final Class<T> type;
-
-        @Override
-        public T asRequired() throws IncompatibleSenderException {
-            try {
-                return type.cast(sender);
-            } catch (final ClassCastException exc) {
-                throw new IncompatibleSenderException(type, exc);
-            }
-        }
-
-        @Override
-        public T asRequired(final Component error) throws IncompatibleSenderException {
-            try {
-                return this.asRequired();
-            } catch (final IncompatibleSenderException exc) {
-                throw IncompatibleSenderException.asReply(error);
-            }
-        }
-
+    /**
+     * Returns underlying command executor cast to {@link Player}.
+     *
+     * @throws IncompatibleSenderException if executor is not a {@link Player}
+     */
+    public Player asPlayer() throws IncompatibleSenderException {
+        if (sender instanceof Player player)
+            return player;
+        // ...
+        throw new IncompatibleSenderException(Player.class);
     }
+
+    /**
+     * Returns {@code true} if underlying command executor is a {@link ConsoleCommandSender}.
+     */
+    public boolean isConsole() {
+        return sender instanceof ConsoleCommandSender;
+    }
+
+    /**
+     * Returns underlying command executor cast to {@link ConsoleCommandSender}.
+     *
+     * @throws IncompatibleSenderException if executor is not a {@link ConsoleCommandSender}
+     */
+    public ConsoleCommandSender asConsole() throws IncompatibleSenderException {
+        if (sender instanceof ConsoleCommandSender console)
+            return console;
+        // ...
+        throw new IncompatibleSenderException(ConsoleCommandSender.class);
+    }
+
+    /**
+     * Returns {@code true} if underlying command executor is {@link T}.
+     */
+    public <T extends CommandSender> boolean is(final Class<T> type) {
+        return sender.getClass().isAssignableFrom(type);
+    }
+
+    /**
+     * Returns underlying command executor cast to {@link ConsoleCommandSender}.
+     *
+     * @throws IncompatibleSenderException if executor is not a {@link ConsoleCommandSender}
+     */
+    public <T extends CommandSender> T as(@NotNull final Class<T> type) throws IncompatibleSenderException {
+        try {
+            return type.cast(sender);
+        } catch (final ClassCastException exc) {
+            throw new IncompatibleSenderException(type, exc);
+        }
+    }
+
 }

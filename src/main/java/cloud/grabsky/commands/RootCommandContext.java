@@ -48,22 +48,24 @@ public final class RootCommandContext {
     private final RootCommandExecutor executor;
 
     @Getter(AccessLevel.PUBLIC)
-    private final String label;
+    private final RootCommandInput input;
 
-    @Getter(AccessLevel.PUBLIC)
-    private final String input;
+    public String getLabel() {
+        return input.getLabel();
+    }
+
 
     /* PERMISSION CHECKING */
 
     @Experimental
     public void requirePermission(final String permission) throws CommandConditionException {
-        if (executor.raw().hasPermission(permission) == false)
+        if (executor.asCommandSender().hasPermission(permission) == false)
             throw CommandConditionException.asReply(Bukkit.permissionMessage());
     }
 
     @Experimental
     public void requirePermission(final String permission, final Component error) throws CommandConditionException {
-        if (executor.raw().hasPermission(permission) == false)
+        if (executor.asCommandSender().hasPermission(permission) == false)
             throw CommandConditionException.asReply(error);
     }
 

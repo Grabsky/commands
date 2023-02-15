@@ -36,6 +36,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Utility class containing helper methods related to server registries.
+ */
 @Internal
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Registries {

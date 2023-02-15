@@ -43,7 +43,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
 
     @Override
     public List<String> provide(final RootCommandContext context) {
-        final Location location = context.getExecutor().as(Player.class).asRequired().getLocation();
+        final Location location = context.getExecutor().as(Player.class).getLocation();
         return Collections.singletonList(new StringBuilder()
                 .append(toRoundedDouble(location.x()))
                 .append(" ")

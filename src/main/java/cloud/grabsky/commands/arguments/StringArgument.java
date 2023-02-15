@@ -28,12 +28,37 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 
-public enum StringArgument implements ArgumentParser<String> {
-    /* SINGLETON */ INSTANCE;
 
-    @Override
-    public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-        return queue.next();
+public enum StringArgument implements ArgumentParser<String> {
+
+    /**
+     * Converts literal to {@link String}.
+     */
+    LITERAL {
+
+        @Override
+        public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+            return queue.next();
+        }
+
+    },
+
+    /**
+     * Converts remaining literals to {@link String} joined with space ({@code " "}).
+     */
+    GREEDY {
+
+        @Override
+        public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
+            final StringBuilder builder = new StringBuilder(queue.next());
+            // appending arguments till the end of input
+            while (queue.hasNext() == true) {
+                builder.append(" ").append(queue.next());
+            }
+            // converting to string and returning
+            return builder.toString();
+        }
+
     }
 
 }

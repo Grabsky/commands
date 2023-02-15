@@ -29,6 +29,9 @@ import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
 
+/**
+ * Converts literal to {@link Double}.
+ */
 public enum DoubleArgument implements ArgumentParser<Double> {
     /* SINGLETON */ INSTANCE;
 

@@ -34,6 +34,9 @@ import org.bukkit.Material;
 
 import java.util.List;
 
+/**
+ * Converts literal to {@link Material}.
+ */
 public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Material> {
     /* SINGLETON */ INSTANCE;
 

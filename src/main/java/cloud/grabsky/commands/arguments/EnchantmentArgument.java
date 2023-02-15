@@ -34,6 +34,9 @@ import org.bukkit.enchantments.Enchantment;
 
 import java.util.List;
 
+/**
+ * Converts literal to {@link Enchantment}.
+ */
 public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<Enchantment> {
     /* SINGLETON */ INSTANCE;
 

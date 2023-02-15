@@ -29,6 +29,9 @@ import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
 
+/**
+ * Converts literal to {@link Float}.
+ */
 public enum FloatArgument implements ArgumentParser<Float> {
     /* SINGLETON */ INSTANCE;
 

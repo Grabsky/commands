@@ -29,6 +29,9 @@ import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 
+/**
+ * Converts literal to {@link Boolean}.
+ */
 public enum BooleanArgument implements ArgumentParser<Boolean> {
     /* SINGLETON */ INSTANCE;
 

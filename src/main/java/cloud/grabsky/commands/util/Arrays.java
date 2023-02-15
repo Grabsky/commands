@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utility class with helper methods related to arrays and collections.
+ * Utility class containing helper methods related to arrays and collections.
  */
 @Internal
 @NoArgsConstructor(access = AccessLevel.PRIVATE)

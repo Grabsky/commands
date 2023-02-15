@@ -23,45 +23,33 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.RequiredElement;
 import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.components.OptionalElement;
+import cloud.grabsky.commands.components.RequiredElement;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.Nullable;
 
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+/**
+ * {@link Argument Argument&lt;T&gt;} represents intermediary type between user input and desired value.
+ */
 public final class Argument<T> implements RequiredElement<T>, OptionalElement<T> {
 
     private final Class<T> type;
     private final RootCommandContext context;
     private final ArgumentQueue queue;
-    private final ArgumentParser<T> parser; // can be null
+    private final ArgumentParser<T> parser;
 
-    public Argument(final Class<T> type, final RootCommandContext context, final ArgumentQueue queue) {
+    public Argument(final Class<T> type, final RootCommandContext context, final ArgumentQueue queue, @Nullable final ArgumentParser<T> parser) {
         this.type = type;
         this.context = context;
         this.queue = queue;
-        this.parser = null;
+        this.parser = (parser != null) ? parser : context.getManager().getArgumentParser(type);
     }
 
     @Override
-    public T asRequired() throws ArgumentParseException {
-        return (parser != null) ? parser.parse(context, queue) : context.getManager().getArgumentParser(type).parse(context, queue);
-    }
-
-    @Override
-    public T asRequired(final Component error) throws ArgumentParseException, MissingInputException {
-        try {
-            return this.asRequired();
-        } catch (final ArgumentParseException exc) {
-            throw ArgumentParseException.asReply(error);
-        } catch (final MissingInputException exc) {
-            throw MissingInputException.asReply(error);
-        }
+    public T asRequired() throws ArgumentParseException, MissingInputException {
+        return parser.parse(context, queue);
     }
 
     @Override
@@ -73,7 +61,7 @@ public final class Argument<T> implements RequiredElement<T>, OptionalElement<T>
     public T asOptional(final T def) {
         try {
             return this.asRequired();
-        } catch (final MissingInputException | ArgumentParseException cause) {
+        } catch (final ArgumentParseException | MissingInputException cause) {
             return def;
         }
     }

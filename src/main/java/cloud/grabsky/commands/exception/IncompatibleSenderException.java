@@ -67,7 +67,7 @@ public class IncompatibleSenderException extends CommandLogicException {
 
             @Override
             public void accept(final RootCommandContext context) {
-                context.getExecutor().raw().sendMessage(message);
+                context.getExecutor().asCommandSender().sendMessage(message);
             }
 
         };
