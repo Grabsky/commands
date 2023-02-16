@@ -86,21 +86,22 @@ public void onCommand(final RootCommandContext context, final ArgumentQueue argu
 ## Exceptions
 Built-in exceptions:
 ```
-┌─ ArgumentParseException
-│   ├─ BooleanParseException ──────── (BooleanArgument)
-│   ├─ EnchantmentParseException ──── (EnchantmentArgument)
-│   ├─ MaterialParseException ─────── (MaterialArgument)
-│   ├─ NamespacedKeyParseException ── (NamespacedKeyArgument)
-│   ├─ NumberParseException
-│   │   ├─ IntegerParseException ──── (IntegerArgument)
-│   │   ├─ DoubleParseException ───── (DoubleArgument)
-│   │   └─ FloatParseException ────── (FloatArgument)
-│   ├─ PlayerParseException ───────── (PlayerArgument)
-│   └─ PositionParseException ─────── (PositionArgument)
-├─ CommandConditionException
-├─ IncompatibleParserException
-├─ IncompatibleSenderException
-└─ MissingInputException
+┌─ CommandLogicException
+│   ├─ ArgumentParseException
+│   │   ├─ BooleanParseException ──────── (BooleanArgument)
+│   │   ├─ EnchantmentParseException ──── (EnchantmentArgument)
+│   │   ├─ MaterialParseException ─────── (MaterialArgument)
+│   │   ├─ NamespacedKeyParseException ── (NamespacedKeyArgument)
+│   │   ├─ NumberParseException
+│   │   │   ├─ IntegerParseException ──── (IntegerArgument)
+│   │   │   ├─ DoubleParseException ───── (DoubleArgument)
+│   │   │   └─ FloatParseException ────── (FloatArgument)
+│   │   ├─ PlayerParseException ───────── (PlayerArgument)
+│   │   └─ PositionParseException ─────── (PositionArgument)
+│   ├─ CommandConditionException
+│   ├─ IncompatibleParserException
+│   ├─ IncompatibleSenderException
+└─  └─ MissingInputException
 ```
 Overriding default exception handlers:
 ```java
