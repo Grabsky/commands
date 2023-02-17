@@ -27,6 +27,7 @@ import cloud.grabsky.commands.components.ArgumentParser;
 import cloud.grabsky.commands.components.OptionalElement;
 import cloud.grabsky.commands.components.RequiredElement;
 import cloud.grabsky.commands.exception.ArgumentParseException;
+import cloud.grabsky.commands.exception.IncompatibleParserException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,16 +36,35 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Argument<T> implements RequiredElement<T>, OptionalElement<T> {
 
-    private final Class<T> type;
     private final RootCommandContext context;
     private final ArgumentQueue queue;
     private final ArgumentParser<T> parser;
 
     public Argument(final Class<T> type, final RootCommandContext context, final ArgumentQueue queue, @Nullable final ArgumentParser<T> parser) {
-        this.type = type;
         this.context = context;
         this.queue = queue;
-        this.parser = (parser != null) ? parser : context.getManager().getArgumentParser(type);
+        this.parser = (parser == null) ? getArgumentParser(type) : parser;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private ArgumentParser<T> getArgumentParser(final Class<T> type) {
+        try {
+            return context.getManager().getArgumentParser(type);
+        } catch (final IncompatibleParserException exc) {
+            // re-throw for non-enum types
+            if (type.isEnum() == false)
+                throw exc;
+            // return fallback enum parser otherwise
+            return (context, queue) -> {
+                final String value = queue.next();
+                try {
+                    return (T) Enum.valueOf((Class) type, value);
+                } catch (final IllegalArgumentException ignored) {
+                    // ignored
+                }
+                throw new ArgumentParseException(value);
+            };
+        }
     }
 
     @Override
