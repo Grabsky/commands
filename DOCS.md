@@ -58,7 +58,7 @@ Built-in arguments. All of them extend `ArgumentParser<T>` and some of them `Com
 ├─ BooleanArgument ──────────────── (Boolean) ─────── [default]
 ├─ IntegerArgument ──────────────── (Integer) ─────── [default]
 ├─ FloatArgument ────────────────── (Float) ───────── [default]
-├─ DoubleArgument ───────────────── (Double)  ─────── [default]
+├─ DoubleArgument ───────────────── (Double) ──────── [default]
 ├─ ComponentArgument
 │   ├─ ComponentArgument.LITERAL ── (Component) ───── [default]
 │   └─ ComponentArgument.GREEDY ─── (Component) ───── [optional]
