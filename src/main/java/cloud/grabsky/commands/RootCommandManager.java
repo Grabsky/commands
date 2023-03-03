@@ -144,7 +144,6 @@ public final class RootCommandManager {
 
             @Override
             public @NotNull List<String> tabComplete(@NotNull final CommandSender sender, @NotNull final String alias, @NotNull final String[] args) throws IllegalArgumentException {
-                final double s1 = System.nanoTime();
                 // disabling completions for invalid input
                 if (args.length > 1 && args[args.length - 2].isEmpty() == true) {
                     return Arrays.EMPTY_STRING_LIST;
@@ -153,10 +152,7 @@ public final class RootCommandManager {
                 final RootCommandContext context = new RootCommandContext(that, rCommand, new RootCommandExecutor(sender), new RootCommandInput(alias, args));
                 // returning filtered list
                 try {
-                    final List<String> list = toFilteredList(rCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
-                    final double s2 = System.nanoTime();
-                    // System.out.println("Operation took " + (s2 - s1) / 1000000D + "ms");
-                    return list;
+                    return toFilteredList(rCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
                 } catch (final CommandLogicException exc) {
                     return Arrays.EMPTY_STRING_LIST;
                 }
