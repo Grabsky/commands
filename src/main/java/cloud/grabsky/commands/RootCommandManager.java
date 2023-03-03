@@ -36,6 +36,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -106,6 +107,9 @@ public final class RootCommandManager {
         this.setCompletionsProvider(Position.class, PositionArgument.INSTANCE);
         // org.bukkit.NamespacedKey
         this.setArgumentParser(NamespacedKey.class, NamespacedKeyArgument.INSTANCE);
+        // org.bukkit.World
+        this.setArgumentParser(World.class, WorldArgument.INSTANCE);
+        this.setCompletionsProvider(World.class, WorldArgument.INSTANCE);
     }
 
     /* COMMANDS */
