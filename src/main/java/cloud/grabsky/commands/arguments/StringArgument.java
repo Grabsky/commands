@@ -36,8 +36,8 @@ public enum StringArgument implements ArgumentParser<String> {
     LITERAL {
 
         @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-            return queue.next();
+        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            return arguments.next();
         }
 
     },
@@ -48,11 +48,11 @@ public enum StringArgument implements ArgumentParser<String> {
     GREEDY {
 
         @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-            final StringBuilder builder = new StringBuilder(queue.next());
+        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            final StringBuilder builder = new StringBuilder(arguments.next());
             // appending arguments till the end of input
-            while (queue.hasNext() == true) {
-                builder.append(" ").append(queue.next());
+            while (arguments.hasNext() == true) {
+                builder.append(" ").append(arguments.next());
             }
             // converting to string and returning
             return builder.toString();

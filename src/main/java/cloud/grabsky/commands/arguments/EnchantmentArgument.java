@@ -50,8 +50,8 @@ public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<E
     }
 
     @Override
-    public Enchantment parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final String value = queue.next();
+    public Enchantment parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         final Enchantment enchantment = Registries.ENCHANTMENT.get(value);
         // ...
         if (enchantment != null)

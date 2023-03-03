@@ -34,6 +34,6 @@ import cloud.grabsky.commands.exception.MissingInputException;
  */
 public interface ArgumentParser<T> {
 
-    T parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException;
+    T parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException;
 
 }

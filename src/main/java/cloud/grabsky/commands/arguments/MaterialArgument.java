@@ -50,8 +50,8 @@ public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Mate
     }
 
     @Override
-    public Material parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final String value = queue.next();
+    public Material parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         final Material material = Registries.MATERIAL.get(value);
         // ...
         if (material != null)

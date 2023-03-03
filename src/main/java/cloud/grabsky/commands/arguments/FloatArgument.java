@@ -36,8 +36,8 @@ public enum FloatArgument implements ArgumentParser<Float> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Float parse(final RootCommandContext context, final ArgumentQueue queue) throws NumberParseException, MissingInputException {
-        final String value = queue.next();
+    public Float parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.next();
         try {
             return Float.parseFloat(value);
         } catch (final NumberFormatException exc) {

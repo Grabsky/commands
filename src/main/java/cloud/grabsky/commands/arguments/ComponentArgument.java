@@ -40,8 +40,8 @@ public enum ComponentArgument implements ArgumentParser<Component> {
         private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
         @Override
-        public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-            return MINI_MESSAGE.deserialize(queue.next());
+        public Component parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            return MINI_MESSAGE.deserialize(arguments.next());
         }
 
     },
@@ -54,11 +54,11 @@ public enum ComponentArgument implements ArgumentParser<Component> {
         private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
 
         @Override
-        public Component parse(final RootCommandContext context, final ArgumentQueue queue) throws MissingInputException {
-            final StringBuilder builder = new StringBuilder(queue.next());
+        public Component parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            final StringBuilder builder = new StringBuilder(arguments.next());
             // appending arguments till the end of input
-            while (queue.hasNext() == true) {
-                builder.append(" ").append(queue.next());
+            while (arguments.hasNext() == true) {
+                builder.append(" ").append(arguments.next());
             }
             // serializing and returning
             return MINI_MESSAGE.deserialize(builder.toString());

@@ -52,8 +52,8 @@ public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player
     }
 
     @Override
-    public Player parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
-        final String value = queue.next();
+    public Player parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
+        final String value = arguments.next();
         // ...
         final Player player = (value.equalsIgnoreCase("@s") && context.getExecutor().isPlayer() == true)
                 ? context.getExecutor().asPlayer()

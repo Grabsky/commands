@@ -34,8 +34,8 @@ public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final String value = queue.next();
+    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
         // ...

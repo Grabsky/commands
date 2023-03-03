@@ -50,8 +50,8 @@ public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<En
     }
 
     @Override
-    public EntityType parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final String value = queue.next();
+    public EntityType parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         final EntityType entity = Registries.ENTITY_TYPE.get(value);
         // ...
         if (entity != null)

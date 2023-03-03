@@ -36,8 +36,8 @@ public enum DoubleArgument implements ArgumentParser<Double> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Double parse(final RootCommandContext context, final ArgumentQueue queue) throws NumberParseException, MissingInputException {
-        final String value = queue.next();
+    public Double parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.next();
         try {
             return Double.parseDouble(value);
         } catch (final NumberFormatException exc) {

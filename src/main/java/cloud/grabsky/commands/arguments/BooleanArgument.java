@@ -47,8 +47,8 @@ public enum BooleanArgument implements CompletionsProvider, ArgumentParser<Boole
     }
 
     @Override
-    public Boolean parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final String value = queue.next();
+    public Boolean parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         // ...
         return switch (value.toLowerCase()) {
             case "true" -> true;

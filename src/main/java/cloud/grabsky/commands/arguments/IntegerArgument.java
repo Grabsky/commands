@@ -36,8 +36,8 @@ public enum IntegerArgument implements ArgumentParser<Integer> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Integer parse(final RootCommandContext context, final ArgumentQueue queue) throws NumberParseException, MissingInputException {
-        final String value = queue.next();
+    public Integer parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.next();
         try {
             return Integer.parseInt(value);
         } catch (final NumberFormatException exc) {

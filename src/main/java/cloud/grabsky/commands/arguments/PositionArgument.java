@@ -55,10 +55,10 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     }
 
     @Override
-    public Position parse(final RootCommandContext context, final ArgumentQueue queue) throws ArgumentParseException, MissingInputException {
-        final Double x = queue.next(Double.class).asOptional();
-        final Double y = queue.next(Double.class).asOptional();
-        final Double z = queue.next(Double.class).asOptional();
+    public Position parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final Double x = arguments.next(Double.class).asOptional();
+        final Double y = arguments.next(Double.class).asOptional();
+        final Double z = arguments.next(Double.class).asOptional();
         // ...
         if (x != null && y != null && z != null)
             return Position.fine(x, y, z);
