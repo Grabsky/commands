@@ -23,10 +23,10 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.arguments.*;
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.components.CompletionsProvider;
-import cloud.grabsky.commands.components.ExceptionHandler;
+import cloud.grabsky.commands.argument.*;
+import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
+import cloud.grabsky.commands.component.ExceptionHandler;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.IncompatibleParserException;
 import cloud.grabsky.commands.util.Arrays;
@@ -51,6 +51,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
 
+import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
+
 /**
  * {@link RootCommandManager} represents a command manager where you can register
  * your commands and customize their handling process
@@ -68,7 +71,7 @@ public final class RootCommandManager {
     private final Map<Class<?>, ExceptionHandler<?>> exceptionHandlers;
     private final Map<Class<?>, CompletionsProvider> completionsProviders;
 
-    private final RootCommandManager that;
+    private static final Component UNEXPECTED_ERROR = text("An unexpected error occurred while executing the command.", RED);
 
     public RootCommandManager(final Plugin plugin) {
         this.plugin = plugin;
@@ -76,7 +79,6 @@ public final class RootCommandManager {
         this.argumentParsers = new HashMap<>();
         this.exceptionHandlers = new HashMap<>();
         this.completionsProviders = new HashMap<>();
-        this.that = this;
         // java.lang.String
         this.setArgumentParser(String.class, StringArgument.LITERAL);
         // java.lang.Integer
@@ -118,6 +120,7 @@ public final class RootCommandManager {
      * Registers command from provided {@link RootCommand} instance.
      */
     public void registerCommand(final RootCommand rCommand) {
+        final RootCommandManager that = this; // Can also be resolved using 'RootCommandManager.this' but this is shorter and looks cleaner
 
         final Command bCommand = new Command(rCommand.getName()) {
 
@@ -132,18 +135,19 @@ public final class RootCommandManager {
                 } catch (final CommandLogicException exc) {
                     final Class<? extends CommandLogicException> exceptionClass = exc.getClass();
                     // handling exceptions using default handlers
-                    if (exc.isHandlerFinal() == false && getExceptionHandler(exceptionClass) != null) {
-                        ((ExceptionHandler) getExceptionHandler(exceptionClass)).handle(exceptionClass.cast(exc), context); // should not be null; raw cast required for compilation
+                    if (exc.isHandlerFinal() == false && that.getExceptionHandler(exceptionClass) != null) {
+                        ((ExceptionHandler) that.getExceptionHandler(exceptionClass)).handle(exceptionClass.cast(exc), context); // should not be null; raw cast required for compilation
                         return false;
                     }
                     // handling "non-final" exceptions (with handlers registered to ExceptionHandlerRegistry)
                     exc.accept(context);
                     return false;
-                } catch (final Throwable e) {
-                    sender.sendMessage("An unexpected error occurred while executing the command.");
-                    e.printStackTrace();
+                } catch (final Throwable exc) {
+                    exc.printStackTrace();
+                    sender.sendMessage(UNEXPECTED_ERROR);
                     return false;
                 }
+
             }
 
             @Override
@@ -153,7 +157,7 @@ public final class RootCommandManager {
                     return Arrays.EMPTY_STRING_LIST;
                 }
                 // handling
-                final RootCommandContext context = new RootCommandContext(that, rCommand, new RootCommandExecutor(sender), new RootCommandInput(alias, args));
+                final RootCommandContext context = new RootCommandContext(RootCommandManager.this, rCommand, new RootCommandExecutor(sender), new RootCommandInput(alias, args));
                 // returning filtered list
                 try {
                     return toFilteredList(rCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
@@ -185,16 +189,13 @@ public final class RootCommandManager {
     }
 
     /**
-     * Registers command from provided {@link Class}.
-     * Class must be either an enum or have an empty constructor.
+     * Registers command from provided {@link Class}. Class must have an empty constructor.
      *
      * @throws IllegalArgumentException if class is inaccessible or cannot be initialized.
      */
     public <T extends RootCommand> void registerCommand(final Class<T> commandClass) throws IllegalArgumentException {
         try {
-            final RootCommand commandObject = (commandClass.isEnum() == true)
-                    ? commandClass.getEnumConstants()[0]
-                    : commandClass.getConstructor().newInstance();
+            final RootCommand commandObject = commandClass.getConstructor().newInstance();
             // registering...
             this.registerCommand(commandObject);
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exc) {
@@ -216,8 +217,7 @@ public final class RootCommandManager {
      **
      * @apiNote This is internal API that can change at any time.
      */
-    @Internal
-    @SuppressWarnings("unchecked")
+    @Internal @SuppressWarnings("unchecked")
     public <T> ArgumentParser<T> getArgumentParser(final Class<T> type) throws IncompatibleParserException {
         if (argumentParsers.containsKey(type) == true)
             return (ArgumentParser<T>) argumentParsers.get(type);
@@ -240,8 +240,7 @@ public final class RootCommandManager {
      *
      * @apiNote This is internal API that can change at any time.
      */
-    @Internal
-    @SuppressWarnings("unchecked")
+    @Internal @SuppressWarnings("unchecked")
     public <E extends CommandLogicException> @Nullable ExceptionHandler<E> getExceptionHandler(final Class<E> type) {
         return (ExceptionHandler<E>) exceptionHandlers.get(type);
     }

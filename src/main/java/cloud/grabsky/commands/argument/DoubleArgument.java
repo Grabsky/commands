@@ -21,19 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.exception.ArgumentParseException;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
+import cloud.grabsky.commands.exception.NumberParseException;
 
 /**
- * {@link ArgumentParser ArgumentParser&lt;T&gt;} takes care of conversion
- * of command input {@link String}, or part of it, to requested {@link T} type.
+ * Converts literal to {@link Double}.
  */
-public interface ArgumentParser<T> {
+public enum DoubleArgument implements ArgumentParser<Double> {
+    /* SINGLETON */ INSTANCE;
 
-    T parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException;
+    @Override
+    public Double parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.next();
+        try {
+            return Double.parseDouble(value);
+        } catch (final NumberFormatException exc) {
+            throw new DoubleParseException(value, exc);
+        }
+    }
+
+    /**
+     * {@link DoubleParseException DoubleParseException} is thrown when invalid numer key is provided for {@link Double} argument type.
+     */
+    public static final class DoubleParseException extends NumberParseException {
+
+        public DoubleParseException(final String inputValue) {
+            super(inputValue);
+        }
+
+        public DoubleParseException(final String inputValue, final Throwable cause) {
+            super(inputValue, cause);
+        }
+
+    }
 
 }

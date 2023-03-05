@@ -21,17 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.component;
 
-import cloud.grabsky.commands.exception.CommandLogicException;
-
-public interface RequiredElement<T> {
+public interface OptionalElement<T> {
 
     /**
-     * Tries to parse and return {@link T} element, or throw {@link CommandLogicException} on failure.
+     * Tries to parse and return {@link T} element, or {@code null} on failure.
      *
      * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
      */
-    T asRequired() throws CommandLogicException;
+    T asOptional();
+
+    /**
+     * Tries to parse and return {@link T} element, or {@code def} on failure.
+     *
+     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
+     */
+    T asOptional(final T def);
 
 }

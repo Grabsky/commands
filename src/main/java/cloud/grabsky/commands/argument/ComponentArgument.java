@@ -21,11 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;

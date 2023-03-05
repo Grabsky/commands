@@ -33,8 +33,7 @@ import java.util.List;
 /**
  * Utility class containing helper methods related to arrays and collections.
  */
-@Internal
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Internal @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Arrays {
 
     public static final List<String> EMPTY_STRING_LIST = new ArrayList<>();

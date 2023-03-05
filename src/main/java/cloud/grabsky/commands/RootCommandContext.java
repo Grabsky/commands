@@ -23,7 +23,7 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.CommandCondition;
+import cloud.grabsky.commands.component.CommandCondition;
 import cloud.grabsky.commands.exception.CommandConditionException;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import lombok.AccessLevel;

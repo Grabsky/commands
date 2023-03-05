@@ -23,9 +23,9 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.components.OptionalElement;
-import cloud.grabsky.commands.components.RequiredElement;
+import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.OptionalElement;
+import cloud.grabsky.commands.component.RequiredElement;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import org.jetbrains.annotations.Nullable;

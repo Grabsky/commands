@@ -39,8 +39,7 @@ import java.util.Map;
 /**
  * Utility class containing helper methods related to server registries.
  */
-@Internal
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Internal @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Registries {
 
     public static final Map<String, Material> MATERIAL = Collections.unmodifiableMap(toStaticMap(Registry.MATERIAL));

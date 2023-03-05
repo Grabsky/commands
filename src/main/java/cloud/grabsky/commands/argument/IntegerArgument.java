@@ -21,40 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
 
 /**
- * Converts literal to {@link Double}.
+ * Converts literal to {@link Integer}.
  */
-public enum DoubleArgument implements ArgumentParser<Double> {
+public enum IntegerArgument implements ArgumentParser<Integer> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Double parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+    public Integer parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
         final String value = arguments.next();
         try {
-            return Double.parseDouble(value);
+            return Integer.parseInt(value);
         } catch (final NumberFormatException exc) {
-            throw new DoubleParseException(value, exc);
+            throw new IntegerParseException(value, exc);
         }
     }
 
     /**
-     * {@link DoubleParseException} is thrown when invalid numer key is provided for {@link Double} argument type.
+     * {@link IntegerParseException IntegerParseException} is thrown when invalid number key is provided for {@link Integer} argument type.
      */
-    public static final class DoubleParseException extends NumberParseException {
+    public static final class IntegerParseException extends NumberParseException {
 
-        public DoubleParseException(final String inputValue) {
+        public IntegerParseException(final String inputValue) {
             super(inputValue);
         }
 
-        public DoubleParseException(final String inputValue, final Throwable cause) {
+        public IntegerParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

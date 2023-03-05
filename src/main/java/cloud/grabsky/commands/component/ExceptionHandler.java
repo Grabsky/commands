@@ -21,22 +21,18 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.component;
 
-public interface OptionalElement<T> {
+import cloud.grabsky.commands.RootCommand;
+import cloud.grabsky.commands.RootCommandContext;
+import cloud.grabsky.commands.exception.CommandLogicException;
 
-    /**
-     * Tries to parse and return {@link T} element, or {@code null} on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
-     */
-    T asOptional();
+/**
+ * {@link ExceptionHandler ExceptionHandler&lt;E&gt;} defines what happens when
+ * {@link E} exception is thrown inside {@link RootCommand#onCommand}.
+ */
+public interface ExceptionHandler<E extends CommandLogicException> {
 
-    /**
-     * Tries to parse and return {@link T} element, or {@code def} on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
-     */
-    T asOptional(final T def);
+    void handle(final E exception, final RootCommandContext context);
 
 }

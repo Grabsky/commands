@@ -21,40 +21,55 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
-import org.bukkit.NamespacedKey;
+import cloud.grabsky.commands.util.Registries;
+import org.bukkit.enchantments.Enchantment;
 
-public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
+import java.util.List;
+
+/**
+ * Converts literal to {@link Enchantment}.
+ */
+public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<Enchantment> {
     /* SINGLETON */ INSTANCE;
 
+    private static final List<String> MINECRAFT_ENCHANTMENT_NAMES = Registries.ENCHANTMENT.keySet().stream()
+            .sorted()
+            .toList();
+
     @Override
-    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+    public List<String> provide(final RootCommandContext context) {
+        return MINECRAFT_ENCHANTMENT_NAMES;
+    }
+
+    @Override
+    public Enchantment parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
         final String value = arguments.next();
+        final Enchantment enchantment = Registries.ENCHANTMENT.get(value);
         // ...
-        final NamespacedKey key = NamespacedKey.fromString(value);
+        if (enchantment != null)
+            return enchantment;
         // ...
-        if (key != null)
-            return key;
-        // ...
-        throw new NamespacedKeyParseException(value);
+        throw new EnchantmentParseException(value);
     }
 
     /**
-     * {@link NamespacedKeyParseException} is thrown when invalid value is provided for {@link NamespacedKey} argument type.
+     * {@link EnchantmentParseException EnchantmentParseException} is thrown when invalid key is provided for {@link Enchantment} argument type.
      */
-    public static final class NamespacedKeyParseException extends ArgumentParseException {
+    public static final class EnchantmentParseException extends ArgumentParseException {
 
-        public NamespacedKeyParseException(final String inputValue) {
+        public EnchantmentParseException(final String inputValue) {
             super(inputValue);
         }
 
-        public NamespacedKeyParseException(final String inputValue, final Throwable cause) {
+        public EnchantmentParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

@@ -21,43 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.component;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 
-public enum StringArgument implements ArgumentParser<String> {
+/**
+ * {@link ArgumentParser ArgumentParser&lt;T&gt;} takes care of conversion
+ * of command input {@link String}, or part of it, to requested {@link T} type.
+ */
+public interface ArgumentParser<T> {
 
-    /**
-     * Converts literal to {@link String}.
-     */
-    LITERAL {
-
-        @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
-            return arguments.next();
-        }
-
-    },
-
-    /**
-     * Converts remaining literals, joined with space, to {@link String}.
-     */
-    GREEDY {
-
-        @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
-            final StringBuilder builder = new StringBuilder(arguments.next());
-            // appending arguments till the end of input
-            while (arguments.hasNext() == true) {
-                builder.append(" ").append(arguments.next());
-            }
-            // converting to string and returning
-            return builder.toString();
-        }
-
-    }
+    T parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException;
 
 }

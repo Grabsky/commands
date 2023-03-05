@@ -21,12 +21,43 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.argument;
 
+import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import org.jetbrains.annotations.ApiStatus.Experimental;
+import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.exception.MissingInputException;
 
-import java.util.function.Predicate;
+public enum StringArgument implements ArgumentParser<String> {
 
-@Experimental
-public interface CommandCondition extends Predicate<RootCommandContext> { /* EMPTY */ }
+    /**
+     * Converts literal to {@link String}.
+     */
+    LITERAL {
+
+        @Override
+        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            return arguments.next();
+        }
+
+    },
+
+    /**
+     * Converts remaining literals, joined with space, to {@link String}.
+     */
+    GREEDY {
+
+        @Override
+        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
+            final StringBuilder builder = new StringBuilder(arguments.next());
+            // appending arguments till the end of input
+            while (arguments.hasNext() == true) {
+                builder.append(" ").append(arguments.next());
+            }
+            // converting to string and returning
+            return builder.toString();
+        }
+
+    }
+
+}

@@ -23,11 +23,12 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.CompletionsProvider;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -56,7 +57,7 @@ public abstract class RootCommand {
      *
      * @apiNote {@link CommandLogicException} should not be caught here.
      */
-    public CompletionsProvider onTabComplete(final RootCommandContext context, final int index) {
+    public @NotNull CompletionsProvider onTabComplete(final @NotNull RootCommandContext context, final int index) throws CommandLogicException {
         return CompletionsProvider.EMPTY; // commands have no completions by default
     }
 
@@ -65,6 +66,6 @@ public abstract class RootCommand {
      *
      * @apiNote {@link CommandLogicException} should not be caught here.
      */
-    public abstract void onCommand(final RootCommandContext context, final ArgumentQueue arguments) throws CommandLogicException;
+    public abstract void onCommand(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws CommandLogicException;
 
 }

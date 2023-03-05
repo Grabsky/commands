@@ -21,18 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.component;
 
-import cloud.grabsky.commands.RootCommand;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.exception.CommandLogicException;
+import org.jetbrains.annotations.ApiStatus.Experimental;
 
-/**
- * {@link ExceptionHandler ExceptionHandler&lt;E&gt;} defines what happens when
- * {@link E} exception is thrown inside {@link RootCommand#onCommand}.
- */
-public interface ExceptionHandler<E extends CommandLogicException> {
+import java.util.function.Predicate;
 
-    void handle(final E exception, final RootCommandContext context);
-
-}
+@Experimental
+public interface CommandCondition extends Predicate<RootCommandContext> { /* EMPTY */ }

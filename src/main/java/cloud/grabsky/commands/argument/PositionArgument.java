@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.CompletionsProvider;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import io.papermc.paper.math.Position;
@@ -71,7 +71,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     }
 
     /**
-     * {@link PositionParseException} is thrown when invalid coordinates are provided for {@link Position} argument type.
+     * {@link PositionParseException PositionParseException} is thrown when invalid coordinates are provided for {@link Position} argument type.
      */
     public static final class PositionParseException extends ArgumentParseException {
 

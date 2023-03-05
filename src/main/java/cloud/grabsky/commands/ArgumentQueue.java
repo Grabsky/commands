@@ -23,7 +23,7 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @apiNote Operating on {@link ArgumentQueue} is not thread-safe.
  */
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ArgumentQueue {
 
     private final RootCommandContext context;
@@ -67,7 +67,7 @@ public final class ArgumentQueue {
      * Doing otherwise, will most likely cause loss of the desired argument order.
      */
     public <T> Argument<T> next(final Class<T> type) {
-        return new Argument<T>(type, context, this, null);
+        return new Argument<>(type, context, this, null);
     }
 
     /**

@@ -21,54 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.components.CompletionsProvider;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
-import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.World;
 
-import java.util.List;
-
-/**
- * Converts literal to {@link World}. World must be loaded.
- */
-public enum WorldArgument implements CompletionsProvider, ArgumentParser<World> {
+public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
-        return Bukkit.getWorlds().stream().map((world) -> world.key().asString()).toList();
-    }
-
-    @Override
-    public World parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next(String.class).asRequired();
+    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.next();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
-        for (final World world : Bukkit.getWorlds()) {
-            if (world.key().equals(key) == true)
-                return world;
-        }
-        throw new WorldParseException(value);
+        if (key != null)
+            return key;
+        // ...
+        throw new NamespacedKeyParseException(value);
     }
 
     /**
-     * {@link WorldParseException WorldParseException} is thrown when invalid key is provided for {@link World} argument type.
+     * {@link NamespacedKeyParseException NamespacedKeyParseException} is thrown when invalid value is provided for {@link NamespacedKey} argument type.
      */
-    public static final class WorldParseException extends ArgumentParseException {
+    public static final class NamespacedKeyParseException extends ArgumentParseException {
 
-        public WorldParseException(final String inputValue) {
+        public NamespacedKeyParseException(final String inputValue) {
             super(inputValue);
         }
 
-        public WorldParseException(final String inputValue, final Throwable cause) {
+        public NamespacedKeyParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

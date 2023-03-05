@@ -21,43 +21,39 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.component;
 
-import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.exception.MissingInputException;
-import cloud.grabsky.commands.exception.NumberParseException;
+import cloud.grabsky.commands.exception.CommandLogicException;
+import cloud.grabsky.commands.util.Arrays;
+
+import java.util.List;
+
+import static cloud.grabsky.commands.util.Arrays.toArrayList;
 
 /**
- * Converts literal to {@link Float}.
+ * {@link CompletionsProvider} is responsible for resolving completions
+ * that are later displayed in command input window for executor.
  */
-public enum FloatArgument implements ArgumentParser<Float> {
-    /* SINGLETON */ INSTANCE;
+public interface CompletionsProvider {
 
-    @Override
-    public Float parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
-        final String value = arguments.next();
-        try {
-            return Float.parseFloat(value);
-        } catch (final NumberFormatException exc) {
-            throw new FloatParseException(value, exc);
-        }
-    }
+    List<String> provide(final RootCommandContext context) throws CommandLogicException;
 
     /**
-     * {@link FloatParseException} is thrown when invalid number key is provided for {@link Float} argument type.
+     * Returns instance of {@link CompletionsProvider} that provides no completions.
      */
-    public static final class FloatParseException extends NumberParseException {
+    CompletionsProvider EMPTY = (context) -> Arrays.EMPTY_STRING_LIST;
 
-        public FloatParseException(final String inputValue) {
-            super(inputValue);
-        }
+    static CompletionsProvider of(final List<String> completions) {
+        return (context) -> completions;
+    }
 
-        public FloatParseException(final String inputValue, final Throwable cause) {
-            super(inputValue, cause);
-        }
+    static CompletionsProvider of(final String... completions) {
+        return (context) -> toArrayList(completions);
+    }
 
+    static <T> CompletionsProvider of(final Class<T> type) {
+        return (context) -> context.getManager().getCompletionsProvider(type).provide(context);
     }
 
 }

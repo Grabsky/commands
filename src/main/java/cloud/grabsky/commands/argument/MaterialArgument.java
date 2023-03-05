@@ -21,55 +21,61 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
-import cloud.grabsky.commands.components.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.util.Registries;
-import org.bukkit.enchantments.Enchantment;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 
 import java.util.List;
 
 /**
- * Converts literal to {@link Enchantment}.
+ * Converts {@link String} literal to {@link Material}.
  */
-public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<Enchantment> {
+public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Material> {
     /* SINGLETON */ INSTANCE;
 
-    private static final List<String> MINECRAFT_ENCHANTMENT_NAMES = Registries.ENCHANTMENT.keySet().stream()
+    private static final List<String> MINECRAFT_MATERIAL_NAMES = Registries.MATERIAL.keySet().stream()
             .sorted()
             .toList();
 
     @Override
     public List<String> provide(final RootCommandContext context) {
-        return MINECRAFT_ENCHANTMENT_NAMES;
+        return MINECRAFT_MATERIAL_NAMES;
     }
 
     @Override
-    public Enchantment parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+    public Material parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
         final String value = arguments.next();
-        final Enchantment enchantment = Registries.ENCHANTMENT.get(value);
         // ...
-        if (enchantment != null)
-            return enchantment;
+        final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
-        throw new EnchantmentParseException(value);
+        if (key != null) {
+            final Material material = Registry.MATERIAL.get(key);
+            if (material != null)
+                return material;
+        }
+        // ...
+        throw new MaterialParseException(value);
     }
 
     /**
-     * {@link EnchantmentParseException} is thrown when invalid key is provided for {@link Enchantment} argument type.
+     * {@link MaterialParseException MaterialParseException} is thrown when invalid key is provided for {@link Material} argument type.
      */
-    public static final class EnchantmentParseException extends ArgumentParseException {
+    public static final class MaterialParseException extends ArgumentParseException {
 
-        public EnchantmentParseException(final String inputValue) {
+        public MaterialParseException(final String inputValue) {
             super(inputValue);
         }
 
-        public EnchantmentParseException(final String inputValue, final Throwable cause) {
+        public MaterialParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

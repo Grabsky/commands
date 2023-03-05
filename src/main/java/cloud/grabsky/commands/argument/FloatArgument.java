@@ -21,55 +21,40 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.components.CompletionsProvider;
-import cloud.grabsky.commands.exception.ArgumentParseException;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
-import cloud.grabsky.commands.util.Registries;
-import org.bukkit.Material;
-
-import java.util.List;
+import cloud.grabsky.commands.exception.NumberParseException;
 
 /**
- * Converts literal to {@link Material}.
+ * Converts literal to {@link Float}.
  */
-public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Material> {
+public enum FloatArgument implements ArgumentParser<Float> {
     /* SINGLETON */ INSTANCE;
 
-    private static final List<String> MINECRAFT_MATERIAL_NAMES = Registries.MATERIAL.keySet().stream()
-            .sorted()
-            .toList();
-
     @Override
-    public List<String> provide(final RootCommandContext context) {
-        return MINECRAFT_MATERIAL_NAMES;
-    }
-
-    @Override
-    public Material parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+    public Float parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
         final String value = arguments.next();
-        final Material material = Registries.MATERIAL.get(value);
-        // ...
-        if (material != null)
-            return material;
-        // ...
-        throw new MaterialParseException(value);
+        try {
+            return Float.parseFloat(value);
+        } catch (final NumberFormatException exc) {
+            throw new FloatParseException(value, exc);
+        }
     }
 
     /**
-     * {@link MaterialParseException} is thrown when invalid key is provided for {@link Material} argument type.
+     * {@link FloatParseException FloatParseException} is thrown when invalid number key is provided for {@link Float} argument type.
      */
-    public static final class MaterialParseException extends ArgumentParseException {
+    public static final class FloatParseException extends NumberParseException {
 
-        public MaterialParseException(final String inputValue) {
+        public FloatParseException(final String inputValue) {
             super(inputValue);
         }
 
-        public MaterialParseException(final String inputValue, final Throwable cause) {
+        public FloatParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

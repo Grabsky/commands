@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
-import cloud.grabsky.commands.components.CompletionsProvider;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
+import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.util.Registries;
@@ -61,7 +61,7 @@ public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<En
     }
 
     /**
-     * {@link EntityTypeParseException} is thrown when invalid key is provided for {@link EntityType} argument type.
+     * {@link EntityTypeParseException EntityTypeParseException} is thrown when invalid key is provided for {@link EntityType} argument type.
      */
     public static final class EntityTypeParseException extends ArgumentParseException {
 

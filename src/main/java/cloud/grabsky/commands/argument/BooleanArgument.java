@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.arguments;
+package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.components.ArgumentParser;
-import cloud.grabsky.commands.components.CompletionsProvider;
+import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.MissingInputException;
@@ -58,7 +58,7 @@ public enum BooleanArgument implements CompletionsProvider, ArgumentParser<Boole
     }
 
     /**
-     * {@link BooleanParseException} is thrown when invalid value is provided for {@link Boolean} argument type.
+     * {@link BooleanParseException BooleanParseException} is thrown when invalid value is provided for {@link Boolean} argument type.
      */
     public static final class BooleanParseException extends ArgumentParseException {
 

@@ -21,39 +21,17 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package cloud.grabsky.commands.components;
+package cloud.grabsky.commands.component;
 
-import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.CommandLogicException;
-import cloud.grabsky.commands.util.Arrays;
 
-import java.util.List;
-
-import static cloud.grabsky.commands.util.Arrays.toArrayList;
-
-/**
- * {@link CompletionsProvider} is responsible for resolving completions
- * that are later displayed in command input window for executor.
- */
-public interface CompletionsProvider {
-
-    List<String> provide(final RootCommandContext context) throws CommandLogicException;
+public interface RequiredElement<T> {
 
     /**
-     * Returns instance of {@link CompletionsProvider} that provides no completions.
+     * Tries to parse and return {@link T} element, or throw {@link CommandLogicException} on failure.
+     *
+     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
      */
-    CompletionsProvider EMPTY = (context) -> Arrays.EMPTY_STRING_LIST;
-
-    static CompletionsProvider of(final List<String> completions) {
-        return (context) -> completions;
-    }
-
-    static CompletionsProvider of(final String... completions) {
-        return (context) -> toArrayList(completions);
-    }
-
-    static <T> CompletionsProvider of(final Class<T> type) {
-        return (context) -> context.getManager().getCompletionsProvider(type).provide(context);
-    }
+    T asRequired() throws CommandLogicException;
 
 }
