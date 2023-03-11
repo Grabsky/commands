@@ -26,7 +26,9 @@ package cloud.grabsky.commands;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -39,8 +41,13 @@ import java.util.List;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ArgumentQueue {
 
-    private final RootCommandContext context;
+    @Getter(AccessLevel.PUBLIC)
+    private final @NotNull RootCommandContext context;
+
     private final List<String> arguments;
+
+    @Getter(AccessLevel.PUBLIC)
+    private int currentArgumentIndex = 0;
 
     /**
      * Returns {@code true} if at least one more element is present in the internal arguments array.
@@ -66,8 +73,8 @@ public final class ArgumentQueue {
      * </pre>
      * Doing otherwise, will most likely cause loss of the desired argument order.
      */
-    public <T> Argument<T> next(final Class<T> type) {
-        return new Argument<>(type, context, this, null);
+    public <T> @NotNull Argument<T> next(final @NotNull Class<T> type) {
+        return new Argument<>(type, context, null, this);
     }
 
     /**
@@ -88,19 +95,26 @@ public final class ArgumentQueue {
      * </pre>
      * Doing otherwise, will most likely cause loss of the desired argument order.
      */
-    public <T> Argument<T> next(final Class<T> type, final ArgumentParser<T> parser) {
-        return new Argument<>(type, context, this, parser);
+    public <T> @NotNull Argument<T> next(final @NotNull Class<T> type, final @NotNull ArgumentParser<T> parser) {
+        return new Argument<>(type, context, parser, this);
     }
 
     /**
      * Returns and removes next {@link String} at the beginning of the this {@link ArgumentQueue}.
      */
-    public String next() throws MissingInputException {
+    public @NotNull String nextString() throws MissingInputException {
         try {
-            return arguments.remove(0);
+            return this.removeNext();
         } catch (final IndexOutOfBoundsException exc) {
             throw new MissingInputException(exc);
         }
+    }
+
+    // Wrapped within seperate method so when IndexOutOfBoundsException is thrown, currentArgumentIndex is not increased
+    private String removeNext() throws IndexOutOfBoundsException {
+        final String next = arguments.remove(0);
+        currentArgumentIndex += 1;
+        return next;
     }
 
 }

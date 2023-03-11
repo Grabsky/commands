@@ -23,12 +23,8 @@
  */
 package cloud.grabsky.commands.exception;
 
-import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.RootCommandExecutor;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 /**
  * {@link IncompatibleSenderException} is thrown when unexpected / incompatible / unsupported executor issued the command.
@@ -48,29 +44,6 @@ public class IncompatibleSenderException extends CommandLogicException {
     public IncompatibleSenderException(final Class<?> expectedType, final Throwable cause) {
         super(cause);
         this.expectedType = expectedType;
-    }
-
-    /**
-     * Returns final (non-overridable) {@link IncompatibleSenderException} which sends
-     * {@link Component} (error) message to {@link RootCommandExecutor}.
-     *
-     * @apiNote This is internal API that can change at any time.
-     */
-    @Internal
-    public static IncompatibleSenderException asReply(final Component message) {
-        return new IncompatibleSenderException(null) {
-
-            @Override
-            public boolean isHandlerFinal() {
-                return true;
-            }
-
-            @Override
-            public void accept(final RootCommandContext context) {
-                context.getExecutor().asCommandSender().sendMessage(message);
-            }
-
-        };
     }
 
 }

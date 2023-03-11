@@ -23,58 +23,63 @@
  */
 package cloud.grabsky.commands.argument;
 
-import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.IncompatibleSenderException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+/**
+ * Converts {@link String} literal to {@link Player}.
+ */
 // TO-DO: Support for more complex selectors?
 public enum PlayerArgument implements CompletionsProvider, ArgumentParser<Player> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
         return (context.getExecutor().isPlayer() == true)
                 ? Stream.concat(Bukkit.getOnlinePlayers().stream()
-                        .filter((player) -> context.getExecutor().asPlayer().canSee(player)) // basic vanish support
-                        .map(Player::getName), Stream.of("@s")).toList()
+                        .filter((player) -> context.getExecutor().asPlayer().canSee(player) == true) // Making sure not to show hidden players...
+                        .map(Player::getName), Stream.of("@s", "@self")).toList()
                 : Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
                         .toList();
     }
 
     @Override
-    public Player parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
-        final String value = arguments.next();
+    public @NotNull Player parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException, IncompatibleSenderException {
+        final String value = arguments.nextString();
         // ...
-        final Player player = (value.equalsIgnoreCase("@s") && context.getExecutor().isPlayer() == true)
-                ? context.getExecutor().asPlayer()
-                : Bukkit.getPlayer(value);
+        final Player player = switch (value.toLowerCase()) {
+            case "@s", "@self" -> context.getExecutor().asPlayer();
+            default -> Bukkit.getPlayerExact(value);
+        };
         // ...
         if (player != null)
             return player;
         // ...
-        throw new PlayerParseException(value);
+        throw new PlayerArgument.Exception(value);
     }
 
     /**
-     * {@link PlayerParseException PlayerParseException} is thrown when invalid player name is provided for {@link Player} argument type.
+     * {@link Exception} is thrown when invalid player name is provided for {@link Player} argument type.
      */
-    public static final class PlayerParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public PlayerParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public PlayerParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

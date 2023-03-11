@@ -30,6 +30,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+
 /**
  * Utility class containing helper methods related to arrays and collections.
  */
@@ -39,7 +41,7 @@ public final class Arrays {
     public static final List<String> EMPTY_STRING_LIST = new ArrayList<>();
 
     public static <T> ArrayList<T> toArrayList(final T[] arr) {
-        return new ArrayList<>(java.util.Arrays.asList(arr));
+        return new ArrayList<>(asList(arr));
     }
 
 }

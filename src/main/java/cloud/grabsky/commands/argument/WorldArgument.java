@@ -32,22 +32,23 @@ import cloud.grabsky.commands.exception.MissingInputException;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Converts literal to {@link World}. World must be loaded.
+ * Converts {@link String} literal to {@link World}. World must be loaded in order to be resolved.
  */
 public enum WorldArgument implements CompletionsProvider, ArgumentParser<World> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
         return Bukkit.getWorlds().stream().map((world) -> world.key().asString()).toList();
     }
 
     @Override
-    public World parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+    public World parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
         final String value = arguments.next(String.class).asRequired();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
@@ -56,19 +57,19 @@ public enum WorldArgument implements CompletionsProvider, ArgumentParser<World> 
             if (world.key().equals(key) == true)
                 return world;
         }
-        throw new WorldParseException(value);
+        throw new WorldArgument.Exception(value);
     }
 
     /**
-     * {@link WorldParseException WorldParseException} is thrown when invalid key is provided for {@link World} argument type.
+     * {@link Exception} is thrown when invalid key is provided for {@link World} argument type.
      */
-    public static final class WorldParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public WorldParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public WorldParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

@@ -26,6 +26,7 @@ package cloud.grabsky.commands.component;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -37,23 +38,23 @@ import static cloud.grabsky.commands.util.Arrays.toArrayList;
  */
 public interface CompletionsProvider {
 
-    List<String> provide(final RootCommandContext context) throws CommandLogicException;
-
     /**
      * Returns instance of {@link CompletionsProvider} that provides no completions.
      */
     CompletionsProvider EMPTY = (context) -> Arrays.EMPTY_STRING_LIST;
 
-    static CompletionsProvider of(final List<String> completions) {
+    static @NotNull CompletionsProvider of(final List<String> completions) {
         return (context) -> completions;
     }
 
-    static CompletionsProvider of(final String... completions) {
+    static @NotNull CompletionsProvider of(final String... completions) {
         return (context) -> toArrayList(completions);
     }
 
-    static <T> CompletionsProvider of(final Class<T> type) {
+    static @NotNull CompletionsProvider of(final Class<?> type) {
         return (context) -> context.getManager().getCompletionsProvider(type).provide(context);
     }
+
+    @NotNull List<String> provide(final @NotNull RootCommandContext context) throws CommandLogicException;
 
 }

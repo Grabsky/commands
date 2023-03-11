@@ -27,34 +27,36 @@ import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
+import org.jetbrains.annotations.NotNull;
 
 public enum StringArgument implements ArgumentParser<String> {
 
     /**
-     * Converts literal to {@link String}.
+     * Returns next argument of {@link ArgumentQueue} as {@link String}.
      */
     LITERAL {
 
         @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
-            return arguments.next();
+        public String parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws MissingInputException {
+            return arguments.nextString();
         }
 
     },
 
     /**
-     * Converts remaining literals, joined with space, to {@link String}.
+     * Returns remaining arguments of {@link ArgumentQueue} as {@link String}.
      */
     GREEDY {
 
         @Override
-        public String parse(final RootCommandContext context, final ArgumentQueue arguments) throws MissingInputException {
-            final StringBuilder builder = new StringBuilder(arguments.next());
-            // appending arguments till the end of input
+        public String parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws MissingInputException {
+            // Creating a StringBuilder from next String argument
+            final StringBuilder builder = new StringBuilder(arguments.nextString());
+            // Appending remaining String arguments to the StringBuilder
             while (arguments.hasNext() == true) {
-                builder.append(" ").append(arguments.next());
+                builder.append(" ").append(arguments.nextString());
             }
-            // converting to string and returning
+            // Returning StringBuilder converted to String
             return builder.toString();
         }
 

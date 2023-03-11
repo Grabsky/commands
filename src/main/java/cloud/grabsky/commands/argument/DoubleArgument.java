@@ -28,33 +28,34 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Converts literal to {@link Double}.
+ * Converts {@link String} literal to {@link Double}.
  */
 public enum DoubleArgument implements ArgumentParser<Double> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Double parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
-        final String value = arguments.next();
+    public Double parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.nextString();
         try {
             return Double.parseDouble(value);
         } catch (final NumberFormatException exc) {
-            throw new DoubleParseException(value, exc);
+            throw new DoubleArgument.Exception(value, exc);
         }
     }
 
     /**
-     * {@link DoubleParseException DoubleParseException} is thrown when invalid numer key is provided for {@link Double} argument type.
+     * {@link Exception} is thrown when invalid numer key is provided for {@link Double} argument type.
      */
-    public static final class DoubleParseException extends NumberParseException {
+    public static final class Exception extends NumberParseException {
 
-        public DoubleParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public DoubleParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

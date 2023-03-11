@@ -148,7 +148,7 @@ Defining completions for simple `/give <player> <material> <amount>` command:
 //   CMD: /give <player> <material> <amount>
 // INDEX:       00000000 1111111111 22222222
 @Override
-public CompletionsProvider onTabComplete(final RootCommandContext context, final int index) {
+public @Nullable CompletionsProvider onTabComplete(final RootCommandContext context, final int index) {
     return switch (index) {
         case 0 -> CompletionsProvider.of(Player.class);
         case 1 -> CompletionsProvider.of(Material.class);

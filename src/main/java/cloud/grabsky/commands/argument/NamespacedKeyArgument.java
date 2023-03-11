@@ -29,32 +29,36 @@ import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import org.bukkit.NamespacedKey;
+import org.jetbrains.annotations.NotNull;
 
+/**
+ * Converts {@link String} literal to {@link NamespacedKey}.
+ */
 public enum NamespacedKeyArgument implements ArgumentParser<NamespacedKey> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public NamespacedKey parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next();
+    public NamespacedKey parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
         if (key != null)
             return key;
         // ...
-        throw new NamespacedKeyParseException(value);
+        throw new NamespacedKeyArgument.Exception(value);
     }
 
     /**
-     * {@link NamespacedKeyParseException NamespacedKeyParseException} is thrown when invalid value is provided for {@link NamespacedKey} argument type.
+     * {@link Exception} is thrown when invalid value is provided for {@link NamespacedKey} argument type.
      */
-    public static final class NamespacedKeyParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public NamespacedKeyParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public NamespacedKeyParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

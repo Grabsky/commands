@@ -28,33 +28,34 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Converts literal to {@link Integer}.
+ * Converts {@link String} literal to {@link Integer}.
  */
 public enum IntegerArgument implements ArgumentParser<Integer> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Integer parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
-        final String value = arguments.next();
+    public Integer parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.nextString();
         try {
             return Integer.parseInt(value);
         } catch (final NumberFormatException exc) {
-            throw new IntegerParseException(value, exc);
+            throw new IntegerArgument.Exception(value, exc);
         }
     }
 
     /**
-     * {@link IntegerParseException IntegerParseException} is thrown when invalid number key is provided for {@link Integer} argument type.
+     * {@link Exception} is thrown when invalid number key is provided for {@link Integer} argument type.
      */
-    public static final class IntegerParseException extends NumberParseException {
+    public static final class Exception extends NumberParseException {
 
-        public IntegerParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public IntegerParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

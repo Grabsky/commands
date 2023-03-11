@@ -30,11 +30,12 @@ import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.MissingInputException;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Converts literal to {@link Boolean}.
+ * Converts {@link String} literal to {@link Boolean}.
  */
 public enum BooleanArgument implements CompletionsProvider, ArgumentParser<Boolean> {
     /* SINGLETON */ INSTANCE;
@@ -42,31 +43,31 @@ public enum BooleanArgument implements CompletionsProvider, ArgumentParser<Boole
     private static final List<String> BOOLEAN_NAMES = List.of("true", "false");
 
     @Override
-    public List<String> provide(final RootCommandContext context) throws CommandLogicException {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) throws CommandLogicException {
         return BOOLEAN_NAMES;
     }
 
     @Override
-    public Boolean parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next();
+    public Boolean parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
         // ...
         return switch (value.toLowerCase()) {
             case "true" -> true;
             case "false" -> false;
-            default -> throw new BooleanParseException(value);
+            default -> throw new BooleanArgument.Exception(value);
         };
     }
 
     /**
-     * {@link BooleanParseException BooleanParseException} is thrown when invalid value is provided for {@link Boolean} argument type.
+     * {@link Exception} is thrown when invalid value is provided for {@link Boolean} argument type.
      */
-    public static final class BooleanParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public BooleanParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public BooleanParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

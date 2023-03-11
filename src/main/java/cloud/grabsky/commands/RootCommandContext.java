@@ -23,18 +23,13 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.component.CommandCondition;
-import cloud.grabsky.commands.exception.CommandConditionException;
-import cloud.grabsky.commands.exception.CommandLogicException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.jetbrains.annotations.ApiStatus.Experimental;
 
-import java.lang.reflect.InvocationTargetException;
-
+/**
+ * {@link RootCommandContext} represents command execution details.
+ */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class RootCommandContext {
 
@@ -53,89 +48,5 @@ public final class RootCommandContext {
     public String getLabel() {
         return input.getLabel();
     }
-
-
-    /* PERMISSION CHECKING */
-
-    @Experimental
-    public void requirePermission(final String permission) throws CommandConditionException {
-        if (executor.asCommandSender().hasPermission(permission) == false)
-            throw CommandConditionException.asReply(Bukkit.permissionMessage());
-    }
-
-    @Experimental
-    public void requirePermission(final String permission, final Component error) throws CommandConditionException {
-        if (executor.asCommandSender().hasPermission(permission) == false)
-            throw CommandConditionException.asReply(error);
-    }
-
-    /* CONDITION CHECKING - TRUE */
-
-    @Experimental
-    public void requireTrue(final CommandCondition condition) throws CommandConditionException {
-        if (condition.test(this) == false)
-            throw new CommandConditionException();
-    }
-
-    @Experimental
-    public void requireTrue(final CommandCondition condition, final Component error) throws CommandConditionException {
-        if (condition.test(this) == false)
-            throw CommandConditionException.asReply(error);
-    }
-
-    @Experimental
-    public void requireTrue(final Class<? extends CommandCondition> condition) throws CommandLogicException {
-        try {
-            this.requireTrue(condition.getConstructor().newInstance());
-        } catch (final NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException exc) {
-            exc.printStackTrace();
-            throw new CommandLogicException(exc);
-        }
-    }
-
-    @Experimental
-    public void requireTrue(final Class<? extends CommandCondition> condition, final Component error) throws CommandLogicException {
-        try {
-            this.requireTrue(condition.getConstructor().newInstance(), error);
-        } catch (final NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException exc) {
-            exc.printStackTrace();
-            throw new CommandLogicException(exc);
-        }
-    }
-
-    /* CONDITION CHECKING - FALSE */
-
-    @Experimental
-    public void requireFalse(final CommandCondition condition) throws CommandConditionException {
-        if (condition.test(this) == true)
-            throw new CommandConditionException();
-    }
-
-    @Experimental
-    public void requireFalse(final CommandCondition condition, final Component error) throws CommandConditionException {
-        if (condition.test(this) == true)
-            throw CommandConditionException.asReply(error);
-    }
-
-    @Experimental
-    public void requireFalse(final Class<? extends CommandCondition> condition) throws CommandLogicException {
-        try {
-            this.requireFalse(condition.getConstructor().newInstance());
-        } catch (final NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException exc) {
-            exc.printStackTrace();
-            throw new CommandLogicException(exc);
-        }
-    }
-
-    @Experimental
-    public void requireFalse(final Class<? extends CommandCondition> condition, final Component error) throws CommandLogicException {
-        try {
-            this.requireFalse(condition.getConstructor().newInstance(), error);
-        } catch (final NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException exc) {
-            exc.printStackTrace();
-            throw new CommandLogicException(exc);
-        }
-    }
-
 }
 

@@ -33,6 +33,7 @@ import cloud.grabsky.commands.util.Registries;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -47,13 +48,13 @@ public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Mate
             .toList();
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
         return MINECRAFT_MATERIAL_NAMES;
     }
 
     @Override
-    public Material parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next();
+    public Material parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
@@ -63,19 +64,19 @@ public enum MaterialArgument implements CompletionsProvider, ArgumentParser<Mate
                 return material;
         }
         // ...
-        throw new MaterialParseException(value);
+        throw new MaterialArgument.Exception(value);
     }
 
     /**
-     * {@link MaterialParseException MaterialParseException} is thrown when invalid key is provided for {@link Material} argument type.
+     * {@link Exception} is thrown when invalid key is provided for {@link Material} argument type.
      */
-    public static final class MaterialParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public MaterialParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public MaterialParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

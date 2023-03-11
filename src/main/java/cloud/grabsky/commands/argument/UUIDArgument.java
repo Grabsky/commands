@@ -26,43 +26,40 @@ package cloud.grabsky.commands.argument;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.NotNull;
 
-public enum ComponentArgument implements ArgumentParser<Component> {
+import java.util.UUID;
+
+/**
+ * Converts {@link String} literal to {@link UUID}.
+ */
+public enum UUIDArgument implements ArgumentParser<UUID> {
+    /* SINGLETON */ INSTANCE;
+
+    @Override
+    public UUID parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
+        // ...
+        try {
+            return UUID.fromString(value);
+        } catch (final IllegalArgumentException exc) {
+            throw new UUIDArgument.Exception(value, exc);
+        }
+    }
 
     /**
-     * Returns next argument of {@link ArgumentQueue} as {@link Component} parsed using (default) {@link MiniMessage} serializer.
+     * {@link Exception} is thrown when invalid value is provided for {@link UUID} argument type.
      */
-    LITERAL {
+    public static final class Exception extends ArgumentParseException {
 
-        private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-
-        @Override
-        public Component parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws MissingInputException {
-            return MINI_MESSAGE.deserialize(arguments.nextString());
+        private Exception(final String inputValue) {
+            super(inputValue);
         }
 
-    },
-
-    /**
-     * Returns remaining arguments of {@link ArgumentQueue} as {@link Component} parsed using (default) {@link MiniMessage} serializer.
-     */
-    GREEDY {
-
-        private static final MiniMessage MINI_MESSAGE = MiniMessage.miniMessage();
-
-        @Override
-        public Component parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws MissingInputException {
-            final StringBuilder builder = new StringBuilder(arguments.nextString());
-            // appending arguments till the end of input
-            while (arguments.hasNext() == true) {
-                builder.append(" ").append(arguments.nextString());
-            }
-            // serializing and returning
-            return MINI_MESSAGE.deserialize(builder.toString());
+        private Exception(final String inputValue, final Throwable cause) {
+            super(inputValue, cause);
         }
 
     }

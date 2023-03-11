@@ -23,7 +23,20 @@
  */
 package cloud.grabsky.commands;
 
-import cloud.grabsky.commands.argument.*;
+import cloud.grabsky.commands.argument.BooleanArgument;
+import cloud.grabsky.commands.argument.ComponentArgument;
+import cloud.grabsky.commands.argument.DoubleArgument;
+import cloud.grabsky.commands.argument.EnchantmentArgument;
+import cloud.grabsky.commands.argument.EntityTypeArgument;
+import cloud.grabsky.commands.argument.FloatArgument;
+import cloud.grabsky.commands.argument.IntegerArgument;
+import cloud.grabsky.commands.argument.MaterialArgument;
+import cloud.grabsky.commands.argument.NamespacedKeyArgument;
+import cloud.grabsky.commands.argument.PlayerArgument;
+import cloud.grabsky.commands.argument.PositionArgument;
+import cloud.grabsky.commands.argument.StringArgument;
+import cloud.grabsky.commands.argument.UUIDArgument;
+import cloud.grabsky.commands.argument.WorldArgument;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.component.ExceptionHandler;
@@ -48,18 +61,25 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
+import static cloud.grabsky.commands.util.Arrays.toArrayList;
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 /**
- * {@link RootCommandManager} represents a command manager where you can register
- * your commands and customize their handling process
+ * {@link RootCommandManager} represents a command manager that can be
+ * used to register commands or customize their handling process.
  */
 // TO-DO: Finish JavaDocs and GitHub documentation.
-// TO-DO: ArgumentQueue#peek
+// TO-DO: ArgumentQueue#peek (?)
 // TO-DO: More testing and improvements based on Q/A results.
 public final class RootCommandManager {
 
@@ -90,6 +110,8 @@ public final class RootCommandManager {
         // java.lang.Boolean
         this.setArgumentParser(Boolean.class, BooleanArgument.INSTANCE);
         this.setCompletionsProvider(Boolean.class, BooleanArgument.INSTANCE);
+        // java.util.UUID
+        this.setArgumentParser(UUID.class, UUIDArgument.INSTANCE);
         // net.kyori.adventure.text.Component
         this.setArgumentParser(Component.class, ComponentArgument.LITERAL);
         // org.bukkit.entity.Player
@@ -114,51 +136,49 @@ public final class RootCommandManager {
         this.setCompletionsProvider(World.class, WorldArgument.INSTANCE);
     }
 
-    /* COMMANDS */
+    /* COMMAND REGISTRATION */
 
     /**
-     * Registers command from provided {@link RootCommand} instance.
+     * Registers command from specified {@link RootCommand} instance.
      */
-    public void registerCommand(final RootCommand rCommand) {
+    public void registerCommand(final @NotNull RootCommand rCommand) {
         final RootCommandManager that = this; // Can also be resolved using 'RootCommandManager.this' but this is shorter and looks cleaner
 
         final Command bCommand = new Command(rCommand.getName()) {
 
             @Override @SuppressWarnings({"unchecked", "rawtypes"})
-            public boolean execute(@NotNull final CommandSender sender, @NotNull final String label, @NotNull final String[] args) {
+            public boolean execute(final @NotNull CommandSender sender, final @NotNull String label, final @NotNull String[] args) {
                 final RootCommandContext context = new RootCommandContext(that, rCommand, new RootCommandExecutor(sender), new RootCommandInput(label, args));
-                final ArgumentQueue queue = new ArgumentQueue(context, Arrays.toArrayList(args));
-                // handling command logic (and exceptions)
+                final ArgumentQueue queue = new ArgumentQueue(context, toArrayList(args));
+                // Handling the command... and exceptions it throws
                 try {
                     rCommand.onCommand(context, queue);
                     return true;
                 } catch (final CommandLogicException exc) {
                     final Class<? extends CommandLogicException> exceptionClass = exc.getClass();
-                    // handling exceptions using default handlers
+                    // Handling exceptions using ExceptionHandler<T> registry
                     if (exc.isHandlerFinal() == false && that.getExceptionHandler(exceptionClass) != null) {
                         ((ExceptionHandler) that.getExceptionHandler(exceptionClass)).handle(exceptionClass.cast(exc), context); // should not be null; raw cast required for compilation
                         return false;
                     }
-                    // handling "non-final" exceptions (with handlers registered to ExceptionHandlerRegistry)
+                    // Handling exceptions using their Consumer<RootCommandContext>
                     exc.accept(context);
                     return false;
-                } catch (final Throwable exc) {
+                } catch (final Throwable exc) { // Handling any other exceptions...
                     exc.printStackTrace();
                     sender.sendMessage(UNEXPECTED_ERROR);
                     return false;
                 }
-
             }
 
             @Override
-            public @NotNull List<String> tabComplete(@NotNull final CommandSender sender, @NotNull final String alias, @NotNull final String[] args) throws IllegalArgumentException {
-                // disabling completions for invalid input
+            public @NotNull List<String> tabComplete(final @NotNull CommandSender sender, final @NotNull String alias, final String @NotNull [] args) throws IllegalArgumentException {
+                // Disabling completions for invalid input
                 if (args.length > 1 && args[args.length - 2].isEmpty() == true) {
                     return Arrays.EMPTY_STRING_LIST;
                 }
-                // handling
+                // Handling...
                 final RootCommandContext context = new RootCommandContext(RootCommandManager.this, rCommand, new RootCommandExecutor(sender), new RootCommandInput(alias, args));
-                // returning filtered list
                 try {
                     return toFilteredList(rCommand.onTabComplete(context, args.length - 1).provide(context), args[args.length - 1]);
                 } catch (final CommandLogicException exc) {
@@ -167,44 +187,42 @@ public final class RootCommandManager {
             }
 
         };
-
+        // Setting Bukkit aliases...
         if (rCommand.getAliases() != null && rCommand.getAliases().length > 0)
-            bCommand.setAliases(Arrays.toArrayList(rCommand.getAliases()));
-
+            bCommand.setAliases(toArrayList(rCommand.getAliases()));
+        // Setting Bukkit permission...
         if (rCommand.getPermission() != null)
             bCommand.setPermission(rCommand.getPermission());
-
+        // Setting Bukkit usage...
         if (rCommand.getUsage() != null)
             bCommand.setUsage(rCommand.getUsage());
-
+        // Setting Bukkit description...
         if (rCommand.getDescription() != null) {
             bCommand.setDescription(rCommand.getDescription());
         }
-
-        // registering command to the server
+        // Registering org.bukkit.Command to the server...
         plugin.getServer().getCommandMap().register(plugin.getName(), bCommand);
-
-        // adding command to the set
+        // Adding RootCommand to the command Set...
         commands.add(rCommand);
     }
 
     /**
-     * Registers command from provided {@link Class}. Class must have an empty constructor.
+     * Registers command from specified {@link Class Class&lt;T&gt;}. Class must have an empty constructor.
      *
-     * @throws IllegalArgumentException if class is inaccessible or cannot be initialized.
+     * @throws IllegalArgumentException class is inaccessible or cannot be initialized.
      */
-    public <T extends RootCommand> void registerCommand(final Class<T> commandClass) throws IllegalArgumentException {
+    public <T extends RootCommand> void registerCommand(final @NotNull Class<T> commandClass) throws IllegalArgumentException {
         try {
             final RootCommand commandObject = commandClass.getConstructor().newInstance();
-            // registering...
+            // Registering using this#registerCommand(RootCommand)...
             this.registerCommand(commandObject);
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exc) {
-            throw new IllegalArgumentException(commandClass.getSimpleName() + " must be either an enum or have an empty constructor.");
+            throw new IllegalArgumentException("Could not register command from " + commandClass.getName() + " class.", exc);
         }
     }
 
     /**
-     * Returns an unmodifiable copy of {@link HashSet} containing all commands registered by this manager.
+     * Returns an unmodifiable copy of {@link HashSet HashSet&lt;RootCommand&gt;} containing all commands registered by this manager.
      */
     public Set<RootCommand> getCommands() {
         return Collections.unmodifiableSet(commands);
@@ -213,12 +231,12 @@ public final class RootCommandManager {
     /* ARGUMENT PARSER */
 
     /**
-     * Returns {@link ArgumentParser ArgumentParser&lt;T&gt;} for specified type.
-     **
+     * Returns {@link ArgumentParser ArgumentParser&lt;T&gt;} for specified {@link Class Class&lt;T&gt;} (type).
+     *
      * @apiNote This is internal API that can change at any time.
      */
     @Internal @SuppressWarnings("unchecked")
-    public <T> ArgumentParser<T> getArgumentParser(final Class<T> type) throws IncompatibleParserException {
+    public <T> ArgumentParser<T> getArgumentParser(final @NotNull Class<T> type) throws IncompatibleParserException {
         if (argumentParsers.containsKey(type) == true)
             return (ArgumentParser<T>) argumentParsers.get(type);
         // ...
@@ -226,63 +244,67 @@ public final class RootCommandManager {
     }
 
     /**
-     * Sets {@link ArgumentParser ArgumentParser&lt;T&gt;} (parser) as a default parser {@link T} (type).
-     * If a parser for this {@link T} (type) already exists - it gets overridden.
+     * Sets {@link ArgumentParser ArgumentParser&lt;T&gt;} (parser) as a default argument parser for {@link T} (type).
      */
-     public <T> void setArgumentParser(final Class<T> type, final ArgumentParser<T> parser) {
-        argumentParsers.put(type, parser);
+     public <T> void setArgumentParser(final @NotNull Class<T> type, final @Nullable ArgumentParser<T> parser) {
+         if (parser == null && argumentParsers.containsKey(type) == true)
+             argumentParsers.remove(type);
+         // ...
+         argumentParsers.put(type, parser);
     }
 
     /* EXCEPTION HANDLER */
 
     /**
-     * Returns {@link ExceptionHandler ExceptionHandler&lt;E&gt;} for specified type, or default.
+     * Returns {@link ExceptionHandler ExceptionHandler&lt;E&gt;} for specified {@link E} (type).
      *
      * @apiNote This is internal API that can change at any time.
      */
     @Internal @SuppressWarnings("unchecked")
-    public <E extends CommandLogicException> @Nullable ExceptionHandler<E> getExceptionHandler(final Class<E> type) {
+    public <E extends CommandLogicException> @Nullable ExceptionHandler<E> getExceptionHandler(final @NotNull Class<E> type) {
         return (ExceptionHandler<E>) exceptionHandlers.get(type);
     }
 
     /**
-     * Sets {@link ExceptionHandler ExceptionHandler&lt;E&gt;} (handler) as a default exception handler {@link E} (type).
-     * If a handler for this {@link E} (type) already exists - it gets overridden.
+     * Sets {@link ExceptionHandler ExceptionHandler&lt;E&gt;} (handler) as a default exception handler for {@link E} (type).
      */
-    public <E extends CommandLogicException> void setExceptionHandler(final Class<E> type, final ExceptionHandler<E> handler) {
+    public <E extends CommandLogicException> void setExceptionHandler(final @NotNull Class<E> type, final @Nullable ExceptionHandler<E> handler) {
         exceptionHandlers.put(type, handler);
     }
 
     /* COMPLETIONS PROVIDER */
 
     /**
-     * Returns {@link CompletionsProvider} for specified type, or {@link CompletionsProvider#EMPTY}.
+     * Returns {@link CompletionsProvider} for specified {@link Class Class&lt;T&gt;} (type) or {@link CompletionsProvider#EMPTY} if not found.
      *
      * @apiNote This is internal API that can change at any time.
      */
     @Internal
-    public <T> CompletionsProvider getCompletionsProvider(final Class<T> type) {
+    public <T> CompletionsProvider getCompletionsProvider(final @NotNull Class<T> type) {
         return (completionsProviders.containsKey(type) == true) ? completionsProviders.get(type) : CompletionsProvider.EMPTY;
     }
 
     /**
-     * Sets {@link CompletionsProvider CompletionsProvider} (provider) as a default completions provider {@link T} (type).
-     * If a provider for this {@link T} (type) already exists - it gets overridden.
+     * Sets {@link CompletionsProvider CompletionsProvider} (provider) as a default completions provider for {@link T} (type).
      */
-    public <T> void setCompletionsProvider(final Class<T> type, final CompletionsProvider provider) {
+    public <T> void setCompletionsProvider(final @NotNull Class<T> type, final @Nullable CompletionsProvider provider) {
+        if (provider == null && completionsProviders.containsKey(type) == true)
+            completionsProviders.remove(type);
+        // ...
         completionsProviders.put(type, provider);
     }
 
     /**
-     * Apply {@link Consumer<RootCommandManager>} template on this {@link RootCommandManager}.
+     * Applies {@link Consumer<RootCommandManager> Consumer&lt;RootCommandManager&gt;} (template) on this {@link RootCommandManager}.
      */
-    public void apply(final Consumer<RootCommandManager> template) {
+    public void apply(final @NotNull Consumer<RootCommandManager> template) {
         template.accept(this);
     }
 
     /* STATIC HELPERS */
 
-    private static List<String> toFilteredList(final List<String> list, final String input) {
+    // Filters list to only contain elements matching 'input' argument. Case insensitive.
+    private static List<String> toFilteredList(final @NotNull List<String> list, final @NotNull String input) {
         return list.stream()
                 .filter(element -> element.toLowerCase().contains(input.toLowerCase()) == true)
                 .toList();

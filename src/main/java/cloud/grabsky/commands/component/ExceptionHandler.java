@@ -26,6 +26,8 @@ package cloud.grabsky.commands.component;
 import cloud.grabsky.commands.RootCommand;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.CommandLogicException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * {@link ExceptionHandler ExceptionHandler&lt;E&gt;} defines what happens when
@@ -33,6 +35,16 @@ import cloud.grabsky.commands.exception.CommandLogicException;
  */
 public interface ExceptionHandler<E extends CommandLogicException> {
 
-    void handle(final E exception, final RootCommandContext context);
+    void handle(final @NotNull E exception, final @NotNull RootCommandContext context);
+
+    /**
+     * {@link Factory ExceptionHandler.Factory&lt;E&gt;} attempts to create {@link ExceptionHandler ExceptionHandler&lt;E&gt;} exclusive
+     * to provided {@link CommandLogicException} exception.
+     */
+    interface Factory {
+
+        @Nullable ExceptionHandler<? extends CommandLogicException> create(final @NotNull CommandLogicException exception);
+
+    }
 
 }

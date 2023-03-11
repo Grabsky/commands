@@ -23,19 +23,17 @@
  */
 package cloud.grabsky.commands.component;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface OptionalElement<T> {
 
     /**
-     * Tries to parse and return {@link T} element, or {@code null} on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
+     * Parses and returns {@link T} or {@code null} on failure.
      */
-    T asOptional();
+    @Nullable T asOptional();
 
     /**
-     * Tries to parse and return {@link T} element, or {@code def} on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
+     * Parses and returns {@link T} or {@code def} on failure.
      */
     T asOptional(final T def);
 

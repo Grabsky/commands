@@ -24,14 +24,18 @@
 package cloud.grabsky.commands.component;
 
 import cloud.grabsky.commands.exception.CommandLogicException;
+import org.jetbrains.annotations.NotNull;
 
 public interface RequiredElement<T> {
 
     /**
-     * Tries to parse and return {@link T} element, or throw {@link CommandLogicException} on failure.
-     *
-     * @apiNote Failures and their logic (defined by eg. {@link ExceptionHandler}) are ignored when invoked within {@link CompletionsProvider}.
+     * Parses and returns {@link T} or throws {@link CommandLogicException} on failure.
      */
-    T asRequired() throws CommandLogicException;
+    @NotNull T asRequired() throws CommandLogicException;
+
+    /**
+     * Parses and returns {@link T} or in case of failure, throws {@link CommandLogicException} created using specified {@link ExceptionHandler.Factory}.
+     */
+    @NotNull <E extends CommandLogicException> T asRequired(final @NotNull ExceptionHandler.Factory factory) throws CommandLogicException;
 
 }

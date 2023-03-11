@@ -28,33 +28,34 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Converts literal to {@link Float}.
+ * Converts {@link String} literal to {@link Float}.
  */
 public enum FloatArgument implements ArgumentParser<Float> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public Float parse(final RootCommandContext context, final ArgumentQueue arguments) throws NumberParseException, MissingInputException {
-        final String value = arguments.next();
+    public Float parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws NumberParseException, MissingInputException {
+        final String value = arguments.nextString();
         try {
             return Float.parseFloat(value);
         } catch (final NumberFormatException exc) {
-            throw new FloatParseException(value, exc);
+            throw new FloatArgument.Exception(value, exc);
         }
     }
 
     /**
-     * {@link FloatParseException FloatParseException} is thrown when invalid number key is provided for {@link Float} argument type.
+     * {@link Exception} is thrown when invalid number key is provided for {@link Float} argument type.
      */
-    public static final class FloatParseException extends NumberParseException {
+    public static final class Exception extends NumberParseException {
 
-        public FloatParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public FloatParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

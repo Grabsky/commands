@@ -27,13 +27,13 @@ import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * {@link ArgumentParser ArgumentParser&lt;T&gt;} takes care of conversion
- * of command input {@link String}, or part of it, to requested {@link T} type.
+ * {@link ArgumentParser ArgumentParser&lt;T&gt;} defines conversion logic from command input {@link String} to {@link T}.
  */
 public interface ArgumentParser<T> {
 
-    T parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException;
+    T parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException;
 
 }

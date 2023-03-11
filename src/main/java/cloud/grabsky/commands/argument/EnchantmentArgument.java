@@ -23,19 +23,22 @@
  */
 package cloud.grabsky.commands.argument;
 
-import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.util.Registries;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Converts literal to {@link Enchantment}.
+ * Converts {@link String} literal to {@link Enchantment}.
  */
 public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<Enchantment> {
     /* SINGLETON */ INSTANCE;
@@ -45,31 +48,33 @@ public enum EnchantmentArgument implements CompletionsProvider, ArgumentParser<E
             .toList();
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
         return MINECRAFT_ENCHANTMENT_NAMES;
     }
 
     @Override
-    public Enchantment parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next();
-        final Enchantment enchantment = Registries.ENCHANTMENT.get(value);
+    public Enchantment parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
+        final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
-        if (enchantment != null)
-            return enchantment;
-        // ...
-        throw new EnchantmentParseException(value);
+        if (key != null) {
+            final Enchantment enchantment = Registry.ENCHANTMENT.get(key);
+            if (enchantment != null)
+                return enchantment;
+        }
+        throw new EnchantmentArgument.Exception(value);
     }
 
     /**
-     * {@link EnchantmentParseException EnchantmentParseException} is thrown when invalid key is provided for {@link Enchantment} argument type.
+     * {@link Exception} is thrown when invalid key is provided for {@link Enchantment} argument type.
      */
-    public static final class EnchantmentParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public EnchantmentParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public EnchantmentParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

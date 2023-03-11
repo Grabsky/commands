@@ -24,10 +24,15 @@
 package cloud.grabsky.commands;
 
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.ExceptionHandler;
 import cloud.grabsky.commands.component.OptionalElement;
 import cloud.grabsky.commands.component.RequiredElement;
 import cloud.grabsky.commands.exception.ArgumentParseException;
+import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.MissingInputException;
+import lombok.AccessLevel;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,20 +40,36 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class Argument<T> implements RequiredElement<T>, OptionalElement<T> {
 
+    @Getter(AccessLevel.PUBLIC)
     private final Class<T> type;
-    private final RootCommandContext context;
-    private final ArgumentQueue queue;
-    private final ArgumentParser<T> parser;
 
-    public Argument(final Class<T> type, final RootCommandContext context, final ArgumentQueue queue, @Nullable final ArgumentParser<T> parser) {
+    private final RootCommandContext context;
+    private final ArgumentParser<T> parser;
+    private final ArgumentQueue queue;
+
+    public Argument(final @NotNull Class<T> type, final @NotNull RootCommandContext context, final @Nullable ArgumentParser<T> parser, final @NotNull ArgumentQueue queue) {
         this.type = type;
         this.context = context;
+        this.parser = (parser == null) ? context.getManager().getArgumentParser(type) : parser;
         this.queue = queue;
-        this.parser = (parser != null) ? parser : context.getManager().getArgumentParser(type);
     }
 
     @Override
-    public T asRequired() throws ArgumentParseException, MissingInputException {
+    public @NotNull T asRequired(final @NotNull ExceptionHandler.Factory factory) throws CommandLogicException {
+        try {
+            return this.asRequired();
+        } catch (final MissingInputException | ArgumentParseException cause) {
+            final ExceptionHandler<?> handler = factory.create(cause);
+            // Using inline exception handler if provided
+            if (handler != null)
+                throw CommandLogicException.asFinal(handler);
+            // Re-throwing so RootCommandManager can handle that.
+            throw cause;
+        }
+    }
+
+    @Override
+    public @NotNull T asRequired() throws ArgumentParseException, MissingInputException {
         return parser.parse(context, queue);
     }
 
@@ -58,10 +79,10 @@ public final class Argument<T> implements RequiredElement<T>, OptionalElement<T>
     }
 
     @Override
-    public T asOptional(final T def) {
+    public T asOptional(final T def) throws ArgumentParseException {
         try {
             return this.asRequired();
-        } catch (final ArgumentParseException | MissingInputException cause) {
+        } catch (final MissingInputException cause) {
             return def;
         }
     }

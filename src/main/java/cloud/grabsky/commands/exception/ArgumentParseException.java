@@ -23,12 +23,8 @@
  */
 package cloud.grabsky.commands.exception;
 
-import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.RootCommandExecutor;
 import lombok.AccessLevel;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.ApiStatus.Internal;
 
 /**
  * {@link ArgumentParseException} is base exception class for all parser-specific errors.
@@ -38,7 +34,7 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 public class ArgumentParseException extends CommandLogicException {
 
     @Getter(AccessLevel.PUBLIC)
-    public final String inputValue;
+    private final String inputValue;
 
     public ArgumentParseException(final String inputValue) {
         super();
@@ -48,29 +44,6 @@ public class ArgumentParseException extends CommandLogicException {
     public ArgumentParseException(final String inputValue, final Throwable cause) {
         super(cause);
         this.inputValue = inputValue;
-    }
-
-    /**
-     * Returns final (non-overridable) {@link ArgumentParseException} which sends
-     * {@link Component} (error) message to {@link RootCommandExecutor}.
-     *
-     * @apiNote This is internal API that can change at any time.
-     */
-    @Internal
-    public static ArgumentParseException asReply(final Component message) {
-        return new ArgumentParseException(null) {
-
-            @Override
-            public boolean isHandlerFinal() {
-                return true;
-            }
-
-            @Override
-            public void accept(final RootCommandContext context) {
-                context.getExecutor().asCommandSender().sendMessage(message);
-            }
-
-        };
     }
 
 }

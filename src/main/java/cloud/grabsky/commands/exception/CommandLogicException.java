@@ -24,29 +24,28 @@
 package cloud.grabsky.commands.exception;
 
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.RootCommandExecutor;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import cloud.grabsky.commands.component.ExceptionHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.format.NamedTextColor.RED;
 import static org.jetbrains.annotations.ApiStatus.Internal;
 
 /**
  * {@link CommandLogicException} is a base exception class that acts as a "safe" return point for commands.
  *
- * @apiNote These exceptions are safe to be thrown within command logic and <b><u>should not</u></b> be manually handled using {@code try...catch} block.
+ * @apiNote This exception is safe to be thrown within command logic and <b><u>should not</u></b> be manually handled using {@code try...catch} block.
  *
  * @see ArgumentParseException
- * @see CommandConditionException
  * @see IncompatibleParserException
  * @see IncompatibleSenderException
  * @see MissingInputException
  */
 public class CommandLogicException extends RuntimeException implements Consumer<RootCommandContext> {
 
-    public CommandLogicException() {
+    protected CommandLogicException() {
         super();
     }
 
@@ -55,8 +54,10 @@ public class CommandLogicException extends RuntimeException implements Consumer<
     }
 
     @Override
-    public void accept(final RootCommandContext context) {
-        context.getExecutor().asCommandSender().sendMessage(text("An error occurred while executing the command. (" + this.getClass().getSimpleName() + ")", NamedTextColor.RED));
+    public void accept(final @NotNull RootCommandContext context) {
+        context.getExecutor().asCommandSender().sendMessage(
+                text("An error occurred while executing the command. (" + extractClassName(this.getClass()) + ")", RED)
+        );
     }
 
     /**
@@ -70,14 +71,14 @@ public class CommandLogicException extends RuntimeException implements Consumer<
     }
 
     /**
-     * Returns final (non-overridable) {@link CommandLogicException} which sends
-     * {@link Component} (error) message to {@link RootCommandExecutor}.
+     * Returns {@link E} with specified {@link ExceptionHandler ExceptionHandler&lt;E&gt;} to be used.
+     * Exceptions created using this method are marked as final (non-overridable).
      *
      * @apiNote This is internal API that can change at any time.
      */
-    @Internal
-    public static CommandLogicException asReply(final Component message) {
-        return new CommandLogicException() {
+    @Internal @SuppressWarnings("unchecked")
+    public static <E extends CommandLogicException> E asFinal(final ExceptionHandler<E> handler) {
+        return (E) new CommandLogicException() {
 
             @Override
             public boolean isHandlerFinal() {
@@ -85,11 +86,25 @@ public class CommandLogicException extends RuntimeException implements Consumer<
             }
 
             @Override
-            public void accept(final RootCommandContext context) {
-                context.getExecutor().asCommandSender().sendMessage(message);
+            public void accept(final @NotNull RootCommandContext context) {
+                handler.handle((E) this, context);
             }
 
         };
+    }
+
+    // Returns (simple) class name respecting its' outer classes.
+    private static @NotNull String extractClassName(final @NotNull Class<?> clazz) {
+        final StringBuilder builder = new StringBuilder(clazz.getSimpleName());
+        // ...
+        Class<?> outer = clazz.getDeclaringClass();
+        // ...
+        while (outer != null) {
+            builder.insert(0, ".").insert(0, outer.getSimpleName());
+            // ...
+            outer = outer.getDeclaringClass();
+        }
+        return builder.toString();
     }
 
 }

@@ -25,18 +25,21 @@ package cloud.grabsky.commands;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
+import static org.jetbrains.annotations.ApiStatus.Experimental;
 
 /**
  * Represents command input supplied by the executor.
  */
 public final class RootCommandInput {
 
+    @Getter(AccessLevel.PUBLIC)
     private final String input;
 
     @Getter(AccessLevel.PUBLIC)
     private final String label;
 
-    @Getter(AccessLevel.PUBLIC)
     private final String[] arguments;
 
     /* PACKAGE PRIVATE */ RootCommandInput(final String label, final String[] rawArguments) {
@@ -47,8 +50,11 @@ public final class RootCommandInput {
 
     /**
      * Returns {@link String} argument at specified index. or {@code ""} (empty string) if out of bounds.
+     *
+     * @apiNote This is experimental API that can change at any time.
      */
-    public String at(final int index) {
+    @Experimental
+    public @NotNull String at(final int index) {
         return (index < arguments.length) ? arguments[index] : "";
     }
 

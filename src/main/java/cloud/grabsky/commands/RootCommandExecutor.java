@@ -58,7 +58,7 @@ public final class RootCommandExecutor {
      *
      * @throws IncompatibleSenderException if executor is not a {@link Player}
      */
-    public Player asPlayer() throws IncompatibleSenderException {
+    public @NotNull Player asPlayer() throws IncompatibleSenderException {
         if (sender instanceof Player player)
             return player;
         // ...
@@ -77,7 +77,7 @@ public final class RootCommandExecutor {
      *
      * @throws IncompatibleSenderException if executor is not a {@link ConsoleCommandSender}
      */
-    public ConsoleCommandSender asConsole() throws IncompatibleSenderException {
+    public @NotNull ConsoleCommandSender asConsole() throws IncompatibleSenderException {
         if (sender instanceof ConsoleCommandSender console)
             return console;
         // ...
@@ -87,7 +87,7 @@ public final class RootCommandExecutor {
     /**
      * Returns {@code true} if underlying command executor is {@link T}.
      */
-    public <T extends CommandSender> boolean is(final Class<T> type) {
+    public <T extends CommandSender> boolean is(final @NotNull Class<T> type) {
         return sender.getClass().isAssignableFrom(type);
     }
 
@@ -96,7 +96,7 @@ public final class RootCommandExecutor {
      *
      * @throws IncompatibleSenderException if executor is not a {@link ConsoleCommandSender}
      */
-    public <T extends CommandSender> T as(@NotNull final Class<T> type) throws IncompatibleSenderException {
+    public <T extends CommandSender> @NotNull T as(final @NotNull Class<T> type) throws IncompatibleSenderException {
         try {
             return type.cast(sender);
         } catch (final ClassCastException exc) {

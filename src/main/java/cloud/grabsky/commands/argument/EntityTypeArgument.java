@@ -23,19 +23,22 @@
  */
 package cloud.grabsky.commands.argument;
 
-import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.util.Registries;
+import org.bukkit.NamespacedKey;
+import org.bukkit.Registry;
 import org.bukkit.entity.EntityType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 /**
- * Converts literal to {@link EntityType}.
+ * Converts {@link String} literal to {@link EntityType}.
  */
 public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<EntityType> {
     /* SINGLETON */ INSTANCE;
@@ -45,31 +48,33 @@ public enum EntityTypeArgument implements CompletionsProvider, ArgumentParser<En
             .toList();
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
         return MINECRAFT_ENTITY_TYPE_NAMES;
     }
 
     @Override
-    public EntityType parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final String value = arguments.next();
-        final EntityType entity = Registries.ENTITY_TYPE.get(value);
+    public EntityType parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+        final String value = arguments.nextString();
+        final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
-        if (entity != null)
-            return entity;
-        // ...
-        throw new EntityTypeParseException(value);
+        if (key != null) {
+            final EntityType entity = Registry.ENTITY_TYPE.get(key);
+            if (entity != null)
+                return entity;
+        }
+        throw new EntityTypeArgument.Exception(value);
     }
 
     /**
-     * {@link EntityTypeParseException EntityTypeParseException} is thrown when invalid key is provided for {@link EntityType} argument type.
+     * {@link Exception} is thrown when invalid key is provided for {@link EntityType} argument type.
      */
-    public static final class EntityTypeParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public EntityTypeParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public EntityTypeParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

@@ -25,25 +25,30 @@ package cloud.grabsky.commands.argument;
 
 import cloud.grabsky.commands.ArgumentQueue;
 import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.component.ArgumentParser;
+import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import io.papermc.paper.math.Position;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 
-@Experimental // inheriting experimental status from Paper
+/**
+ * Converts three {@link String} literals to {@link Position}.
+ * 
+ * @apiNote This is experimental API that can change at any time.
+ */
+@Experimental // Inheriting @Experimental status from Paper
 public enum PositionArgument implements CompletionsProvider, ArgumentParser<Position> {
     /* SINGLETON */ INSTANCE;
 
     @Override
-    public List<String> provide(final RootCommandContext context) {
-        final Location location = context.getExecutor().as(Player.class).getLocation();
+    public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
+        final Location location = context.getExecutor().asPlayer().getLocation();
         return Collections.singletonList(new StringBuilder()
                 .append(toRoundedDouble(location.x()))
                 .append(" ")
@@ -55,7 +60,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     }
 
     @Override
-    public Position parse(final RootCommandContext context, final ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
+    public Position parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
         final Double x = arguments.next(Double.class).asOptional();
         final Double y = arguments.next(Double.class).asOptional();
         final Double z = arguments.next(Double.class).asOptional();
@@ -63,7 +68,7 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
         if (x != null && y != null && z != null)
             return Position.fine(x, y, z);
         // ...
-        throw new PositionParseException(x + " " + y + " " + z);
+        throw new PositionArgument.Exception(x + " " + y + " " + z);
     }
 
     private static String toRoundedDouble(final double num) {
@@ -71,15 +76,15 @@ public enum PositionArgument implements CompletionsProvider, ArgumentParser<Posi
     }
 
     /**
-     * {@link PositionParseException PositionParseException} is thrown when invalid coordinates are provided for {@link Position} argument type.
+     * {@link Exception} is thrown when invalid coordinates are provided for {@link Position} argument type.
      */
-    public static final class PositionParseException extends ArgumentParseException {
+    public static final class Exception extends ArgumentParseException {
 
-        public PositionParseException(final String inputValue) {
+        private Exception(final String inputValue) {
             super(inputValue);
         }
 
-        public PositionParseException(final String inputValue, final Throwable cause) {
+        private Exception(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
         }
 

@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class RootCommand {
 
     @Getter(AccessLevel.PUBLIC)
-    private final String name;
+    private final @NotNull String name;
 
     @Getter(AccessLevel.PUBLIC)
     private final @Nullable String[] aliases;
@@ -55,7 +55,7 @@ public abstract class RootCommand {
     /**
      * Handles command completions/suggestions that pop-up for the client.
      *
-     * @apiNote {@link CommandLogicException} should not be caught here.
+     * @apiNote You should not {@code try...catch} any {@link CommandLogicException} thrown by this method.
      */
     public @NotNull CompletionsProvider onTabComplete(final @NotNull RootCommandContext context, final int index) throws CommandLogicException {
         return CompletionsProvider.EMPTY; // commands have no completions by default
@@ -64,7 +64,7 @@ public abstract class RootCommand {
     /**
      * Handles command logic that is called upon command execution.
      *
-     * @apiNote {@link CommandLogicException} should not be caught here.
+     * @apiNote You should not {@code try...catch} any {@link CommandLogicException} thrown by this method.
      */
     public abstract void onCommand(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws CommandLogicException;
 

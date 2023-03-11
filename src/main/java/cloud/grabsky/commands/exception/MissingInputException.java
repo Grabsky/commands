@@ -23,11 +23,6 @@
  */
 package cloud.grabsky.commands.exception;
 
-import cloud.grabsky.commands.RootCommandContext;
-import cloud.grabsky.commands.RootCommandExecutor;
-import net.kyori.adventure.text.Component;
-import org.jetbrains.annotations.ApiStatus.Internal;
-
 /**
  * {@link MissingInputException} is thrown when command input is expected but not present.
  *
@@ -41,29 +36,6 @@ public class MissingInputException extends CommandLogicException {
 
     public MissingInputException(final Throwable cause) {
         super(cause);
-    }
-
-    /**
-     * Returns final (non-overridable) {@link MissingInputException} which sends
-     * {@link Component} (error) message to {@link RootCommandExecutor}.
-     *
-     * @apiNote This is internal API that can change at any time.
-     */
-    @Internal
-    public static MissingInputException asReply(final Component message) {
-        return new MissingInputException() {
-
-            @Override
-            public boolean isHandlerFinal() {
-                return true;
-            }
-
-            @Override
-            public void accept(final RootCommandContext context) {
-                context.getExecutor().asCommandSender().sendMessage(message);
-            }
-
-        };
     }
 
 }
