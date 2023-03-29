@@ -32,6 +32,7 @@ import cloud.grabsky.commands.argument.FloatArgument;
 import cloud.grabsky.commands.argument.IntegerArgument;
 import cloud.grabsky.commands.argument.MaterialArgument;
 import cloud.grabsky.commands.argument.NamespacedKeyArgument;
+import cloud.grabsky.commands.argument.OfflinePlayerArgument;
 import cloud.grabsky.commands.argument.PlayerArgument;
 import cloud.grabsky.commands.argument.PositionArgument;
 import cloud.grabsky.commands.argument.StringArgument;
@@ -49,6 +50,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -114,9 +116,12 @@ public final class RootCommandManager {
         this.setArgumentParser(UUID.class, UUIDArgument.INSTANCE);
         // net.kyori.adventure.text.Component
         this.setArgumentParser(Component.class, ComponentArgument.LITERAL);
-        // org.bukkit.entity.Player
         this.setArgumentParser(Player.class, PlayerArgument.INSTANCE);
+        // org.bukkit.entity.Player
         this.setCompletionsProvider(Player.class, PlayerArgument.INSTANCE);
+        // org.bukkit.OfflinePlayer
+        this.setArgumentParser(OfflinePlayer.class, OfflinePlayerArgument.INSTANCE);
+        this.setCompletionsProvider(OfflinePlayer.class, OfflinePlayerArgument.INSTANCE);
         // org.bukkit.Material
         this.setArgumentParser(Material.class, MaterialArgument.INSTANCE);
         this.setCompletionsProvider(Material.class, MaterialArgument.INSTANCE);
