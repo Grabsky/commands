@@ -30,6 +30,7 @@ import cloud.grabsky.commands.argument.EnchantmentArgument;
 import cloud.grabsky.commands.argument.EntityTypeArgument;
 import cloud.grabsky.commands.argument.FloatArgument;
 import cloud.grabsky.commands.argument.IntegerArgument;
+import cloud.grabsky.commands.argument.LongArgument;
 import cloud.grabsky.commands.argument.MaterialArgument;
 import cloud.grabsky.commands.argument.NamespacedKeyArgument;
 import cloud.grabsky.commands.argument.OfflinePlayerArgument;
@@ -105,6 +106,8 @@ public final class RootCommandManager {
         this.setArgumentParser(String.class, StringArgument.LITERAL);
         // java.lang.Integer
         this.setArgumentParser(Integer.class, IntegerArgument.INSTANCE);
+        // java.lang.Long
+        this.setArgumentParser(Long.class, LongArgument.INSTANCE);
         // java.lang.Float
         this.setArgumentParser(Float.class, FloatArgument.INSTANCE);
         // java.lang.Double
@@ -175,6 +178,8 @@ public final class RootCommandManager {
                     return false;
                 }
             }
+
+
 
             @Override
             public @NotNull List<String> tabComplete(final @NotNull CommandSender sender, final @NotNull String alias, final String @NotNull [] args) throws IllegalArgumentException {
