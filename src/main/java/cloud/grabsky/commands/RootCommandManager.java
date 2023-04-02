@@ -105,13 +105,13 @@ public final class RootCommandManager {
         // java.lang.String
         this.setArgumentParser(String.class, StringArgument.LITERAL);
         // java.lang.Integer
-        this.setArgumentParser(Integer.class, IntegerArgument.INSTANCE);
+        this.setArgumentParser(Integer.class, IntegerArgument.DEFAULT_RANGE);
         // java.lang.Long
-        this.setArgumentParser(Long.class, LongArgument.INSTANCE);
+        this.setArgumentParser(Long.class, LongArgument.DEFAULT_RANGE);
         // java.lang.Float
-        this.setArgumentParser(Float.class, FloatArgument.INSTANCE);
+        this.setArgumentParser(Float.class, FloatArgument.DEFAULT_RANGE);
         // java.lang.Double
-        this.setArgumentParser(Double.class, DoubleArgument.INSTANCE);
+        this.setArgumentParser(Double.class, DoubleArgument.DEFAULT_RANGE);
         // java.lang.Boolean
         this.setArgumentParser(Boolean.class, BooleanArgument.INSTANCE);
         this.setCompletionsProvider(Boolean.class, BooleanArgument.INSTANCE);

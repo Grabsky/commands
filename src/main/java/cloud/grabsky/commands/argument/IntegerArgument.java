@@ -28,35 +28,82 @@ import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
 import cloud.grabsky.commands.exception.NumberParseException;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+
+import java.math.BigDecimal;
 
 /**
  * Converts {@link String} literal to {@link Integer}.
  */
-public enum IntegerArgument implements ArgumentParser<Integer> {
-    /* SINGLETON */ INSTANCE;
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class IntegerArgument implements ArgumentParser<Integer> {
+
+    public static final IntegerArgument DEFAULT_RANGE = new IntegerArgument(Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+    public static ArgumentParser<Integer> ofRange(final int min, final int max) {
+        return new IntegerArgument(min, max);
+    }
+
+    @Getter(AccessLevel.PUBLIC)
+    private final int min;
+
+    @Getter(AccessLevel.PUBLIC)
+    private final int max;
 
     @Override
     public Integer parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws NumberParseException, MissingInputException {
         final String value = arguments.nextString();
         try {
-            return Integer.parseInt(value);
-        } catch (final NumberFormatException exc) {
-            throw new IntegerArgument.Exception(value, exc);
+            final BigDecimal num = new BigDecimal(value);
+            // Throwing an exception in case provided number is out of specified range.
+            if (BigDecimal.valueOf(min).compareTo(num) > 0 || BigDecimal.valueOf(max).compareTo(num) < 0)
+                throw new IntegerArgument.RangeException(value, min, max);
+            // Returning the number.
+            return num.intValue();
+        } catch (final NumberFormatException e) {
+            throw new IntegerArgument.ParseException(value, e);
         }
     }
 
     /**
-     * {@link Exception} is thrown when invalid number key is provided for {@link Integer} argument type.
+     * {@link Exception} is thrown when invalid number is provided for {@link Integer} argument type.
      */
-    public static final class Exception extends NumberParseException {
+    public static final class ParseException extends NumberParseException {
 
-        private Exception(final String inputValue) {
+        private ParseException(final String inputValue) {
             super(inputValue);
         }
 
-        private Exception(final String inputValue, final Throwable cause) {
+        private ParseException(final String inputValue, final Throwable cause) {
             super(inputValue, cause);
+        }
+
+    }
+
+    /**
+     * {@link RangeException} is thrown when provided {@link IntegerArgument} is out of specified range.
+     */
+    public static final class RangeException extends NumberParseException {
+
+        @Getter(AccessLevel.PUBLIC)
+        private final int min;
+
+        @Getter(AccessLevel.PUBLIC)
+        private final int max;
+
+        private RangeException(final String inputValue, final int min, final int max) {
+            super(inputValue);
+            this.min = min;
+            this.max = max;
+        }
+
+        private RangeException(final String inputValue, final int min, final int max, final Throwable cause) {
+            super(inputValue, cause);
+            this.min = min;
+            this.max = max;
         }
 
     }
