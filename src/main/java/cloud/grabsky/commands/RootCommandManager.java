@@ -36,6 +36,7 @@ import cloud.grabsky.commands.argument.NamespacedKeyArgument;
 import cloud.grabsky.commands.argument.OfflinePlayerArgument;
 import cloud.grabsky.commands.argument.PlayerArgument;
 import cloud.grabsky.commands.argument.PositionArgument;
+import cloud.grabsky.commands.argument.ShortArgument;
 import cloud.grabsky.commands.argument.StringArgument;
 import cloud.grabsky.commands.argument.UUIDArgument;
 import cloud.grabsky.commands.argument.WorldArgument;
@@ -104,6 +105,8 @@ public final class RootCommandManager {
         this.completionsProviders = new HashMap<>();
         // java.lang.String
         this.setArgumentParser(String.class, StringArgument.LITERAL);
+        // java.lang.Short
+        this.setArgumentParser(Short.class, ShortArgument.DEFAULT_RANGE);
         // java.lang.Integer
         this.setArgumentParser(Integer.class, IntegerArgument.DEFAULT_RANGE);
         // java.lang.Long
