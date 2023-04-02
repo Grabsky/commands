@@ -8,7 +8,7 @@ Documentation and examples are available **[here](https://github.com/Grabsky/com
 <br />
 
 ## Requirements
-Requires **Java 17** (or higher) and **Paper 1.19.3** (or higher).
+Requires **Java 17** (or higher) and **Paper 1.19.4** (or higher).
 
 <br />
 
@@ -16,13 +16,13 @@ Requires **Java 17** (or higher) and **Paper 1.19.3** (or higher).
 To use this project in your plugin, add following repository:
 ```groovy
 repositories {
-    maven { url = 'https://repo.grabsky.cloud/releases' }
+    maven { url = "https://repo.grabsky.cloud/releases" }
 }
 ```
 Then specify dependency:
 ```groovy
 dependencies {
-    implementation 'cloud.grabsky:commands:[version]'
+    implementation("cloud.grabsky:commands:[version]")
 }
 ```
 Use **[relocation](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent issues with plugins depending on different versions of the framework.

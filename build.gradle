@@ -1,25 +1,24 @@
 plugins {
-    id 'java'
-    id 'maven-publish'
+    id "java-library"
+    id "maven-publish"
 }
 
-group = 'cloud.grabsky'
-version = '0.1.0-SNAPSHOT'
+group = "cloud.grabsky"
+version = "0.1.0-SNAPSHOT"
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
-final isSnapshot = version.endsWith('-SNAPSHOT')
-final hash7 = 'git rev-parse --verify --short HEAD'.execute().text.trim()
+final isSnapshot = version.endsWith("-SNAPSHOT")
+final hash7 = "git rev-parse --verify --short HEAD".execute().text.trim()
 
 publishing {
     repositories {
         maven {
-            name 'Cloud'
-            url (isSnapshot == true ? 'https://repo.grabsky.cloud/snapshots' : 'https://repo.grabsky.cloud/releases')
+            url (isSnapshot == true ? "https://repo.grabsky.cloud/snapshots" : "https://repo.grabsky.cloud/releases")
             credentials {
-                username System.getenv('REPO_USERNAME')
-                password System.getenv('REPO_SECRET')
+                username System.getenv("REPO_USERNAME")
+                password System.getenv("REPO_SECRET")
             }
             authentication { basic(BasicAuthentication) }
         }
@@ -39,20 +38,20 @@ java {
 }
 
 javadoc {
-    (options as CoreJavadocOptions).addStringOption('Xdoclint:none', '-quiet')
+    (options as CoreJavadocOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
 repositories {
     mavenCentral()
-    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url = "https://repo.papermc.io/repository/maven-public/" }
 }
 
 dependencies {
     // lombok
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly("org.projectlombok:lombok:1.18.24")
+    annotationProcessor("org.projectlombok:lombok:1.18.24")
     // jetbrains annotations
-    compileOnly 'org.jetbrains:annotations:24.0.0'
+    compileOnly("org.jetbrains:annotations:24.0.0")
     // paper
-    compileOnly 'io.papermc.paper:paper-api:1.19.3-R0.1-SNAPSHOT'
+    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
 }
