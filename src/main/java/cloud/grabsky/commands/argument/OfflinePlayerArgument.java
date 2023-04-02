@@ -50,7 +50,7 @@ public enum OfflinePlayerArgument implements CompletionsProvider, ArgumentParser
         return (context.getExecutor().isPlayer() == true)
                 ? Stream.concat(Bukkit.getOnlinePlayers().stream()
                         .filter((player) -> context.getExecutor().asPlayer().canSee(player) == true) // Making sure not to show hidden players...
-                        .map(Player::getName), Stream.of("@s", "@self")).toList()
+                        .map(Player::getName), Stream.of("@self")).toList()
                 : Bukkit.getOnlinePlayers().stream()
                         .map(Player::getName)
                         .toList();
@@ -61,7 +61,7 @@ public enum OfflinePlayerArgument implements CompletionsProvider, ArgumentParser
         final String value = arguments.nextString();
         // ...
         final OfflinePlayer offlinePlayer = switch (value.toLowerCase()) {
-            case "@s", "@self" -> context.getExecutor().asPlayer();
+            case "@self" -> context.getExecutor().asPlayer();
             default -> {
                 try {
                     yield (Bukkit.getPlayerExact(value) != null)
