@@ -35,6 +35,7 @@ import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Converts {@link String} literal to {@link World}. World must be loaded in order to be resolved.
@@ -44,12 +45,15 @@ public enum WorldArgument implements CompletionsProvider, ArgumentParser<World> 
 
     @Override
     public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
-        return Bukkit.getWorlds().stream().map((world) -> world.key().asString()).toList();
+        return Stream.concat(Stream.of("@world"), Bukkit.getWorlds().stream().map(world -> world.key().asString())).toList();
     }
 
     @Override
     public World parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
         final String value = arguments.next(String.class).asRequired();
+        // ...
+        if (value.equalsIgnoreCase("@world") == true)
+            return context.getExecutor().asPlayer().getWorld();
         // ...
         final NamespacedKey key = NamespacedKey.fromString(value);
         // ...
