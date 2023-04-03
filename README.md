@@ -5,6 +5,9 @@ Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/
 
 Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
 
+> **Warning**  
+> Breaking changes are likely to happen before a stable release. Use at your own risk.
+
 <br />
 
 ## Requirements
@@ -23,7 +26,7 @@ repositories {
 Then specify dependency:
 ```groovy
 dependencies {
-    // Snapshots uses first seven (7) characters of commit hash as a version.
+    // Snapshots use first seven (7) characters of commit hash as a version.
     // NOTE: Only pushed (built) commits are available in the repository.
     implementation("cloud.grabsky:commands:[_VERSION_]")
 }
