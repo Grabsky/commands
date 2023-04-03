@@ -1,9 +1,10 @@
+> **Warning**  
+> Breaking changes are likely to happen before a stable release. Use at your own risk.
+
 # grabsky/commands
 [![](https://github.com/Grabsky/commands/actions/workflows/gradle.yml/badge.svg)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
 [![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It is still under development and **should not** be used on production servers.
-
-Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers.
 
 <br />
 
@@ -13,19 +14,27 @@ Requires **Java 17** (or higher) and **Paper 1.19.4** (or higher).
 <br />
 
 ## Getting Started
-To use this project in your plugin, add following repository:
+To use this project in your plugin, following repository:
 ```groovy
 repositories {
-    maven { url = "https://repo.grabsky.cloud/releases" }
+    // Snapshots repository. Nothing is published to the main repository until a stable release.
+    maven { url = "https://repo.grabsky.cloud/snapshots" }
 }
 ```
 Then specify dependency:
 ```groovy
 dependencies {
-    implementation("cloud.grabsky:commands:[version]")
+    // Snapshots uses first seven (7) characters of commit hash as a version.
+    // NOTE: Only pushed (built) commits are available in the repository.
+    implementation("cloud.grabsky:commands:[_VERSION_]")
 }
 ```
-Use **[relocation](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent issues with plugins depending on different versions of the framework.
+Consider **[relocating](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent version mismatch issues.
+
+<br />
+
+## Documentation
+Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
 
 <br />
 
@@ -34,7 +43,7 @@ Use **[relocation](https://imperceptiblethoughts.com/shadow/configuration/reloca
 # Cloning repository
 $ git clone https://github.com/Grabsky/commands.git
 # Entering cloned repository
-$ cd ./configuration
+$ cd ./commands
 # Compiling and publishing to maven local
 $ ./gradlew clean publishToMavenLocal
 ```
