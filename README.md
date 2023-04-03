@@ -1,10 +1,9 @@
-> **Warning**  
-> Breaking changes are likely to happen before a stable release. Use at your own risk.
-
 # grabsky/commands
 [![](https://github.com/Grabsky/commands/actions/workflows/gradle.yml/badge.svg)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
 [![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers.
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It is still under development and **should not** be used on production servers.
+
+Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
 
 <br />
 
@@ -14,7 +13,7 @@ Requires **Java 17** (or higher) and **Paper 1.19.4** (or higher).
 <br />
 
 ## Getting Started
-To use this project in your plugin, following repository:
+To use this project in your plugin, add following repository:
 ```groovy
 repositories {
     // Snapshots repository. Nothing is published to the main repository until a stable release.
