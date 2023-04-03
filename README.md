@@ -1,9 +1,7 @@
 # grabsky/commands
 [![](https://github.com/Grabsky/commands/actions/workflows/gradle.yml/badge.svg)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
 [![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. It is still under development and **should not** be used on production servers.
-
-Documentation and examples are available **[here](https://github.com/Grabsky/commands/blob/main/DOCS.md)**.
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers.
 
 > **Warning**  
 > Breaking changes are likely to happen before a stable release. Use at your own risk.
