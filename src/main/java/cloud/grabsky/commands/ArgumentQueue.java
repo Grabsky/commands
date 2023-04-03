@@ -25,12 +25,21 @@ package cloud.grabsky.commands;
 
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
+import com.google.common.collect.Iterators;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
+import static java.util.Collections.unmodifiableList;
+import static org.jetbrains.annotations.ApiStatus.*;
 
 /**
  * {@link ArgumentQueue} contains all arguments provided for the executed command and exposes
@@ -38,26 +47,50 @@ import java.util.List;
  *
  * @apiNote Operating on {@link ArgumentQueue} is not thread-safe.
  */
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public final class ArgumentQueue {
 
     @Getter(AccessLevel.PUBLIC)
     private final @NotNull RootCommandContext context;
 
-    private final List<String> arguments;
-
     @Getter(AccessLevel.PUBLIC)
-    private int currentArgumentIndex = 0;
+    private final @Unmodifiable List<String> arguments;
 
-    /**
-     * Returns {@code true} if at least one more element is present in the internal arguments array.
-     */
-    public boolean hasNext() {
-        return arguments.isEmpty() == false;
+    // NOTE: Iterator should not be directly exposed to the API.
+    private final @NotNull ListIterator<String> iterator;
+
+    /* package private */ ArgumentQueue(final @NotNull RootCommandContext context, final @NotNull List<String> arguments) {
+        this.context = context;
+        this.arguments = unmodifiableList(arguments);
+        this.iterator = arguments.listIterator();
     }
 
     /**
-     * Returns and removes next element at the beginning of this {@link ArgumentQueue}
+     * Returns {@code true} if at least one more element is present.
+     */
+    public boolean hasNext() {
+        return iterator.hasNext() == true;
+    }
+
+    /**
+     * Returns next index of this {@link ArgumentQueue}.
+     */
+    public int getNextIndex() {
+        return iterator.nextIndex();
+    }
+
+    /**
+     * Returns next {@link String} at the beginning of this {@link ArgumentQueue}.
+     */
+    public @NotNull String nextString() throws MissingInputException {
+        try {
+            return iterator.next();
+        } catch (final NoSuchElementException e) {
+            throw new MissingInputException(e);
+        }
+    }
+
+    /**
+     * Returns next element at the beginning of this {@link ArgumentQueue}
      * as an {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} {@code type}.
      * <br />
      * <br />
@@ -71,14 +104,14 @@ public final class ArgumentQueue {
      * // DO THAT INSTEAD
      * final Player target = arguments.next(Player.class).asRequired();
      * </pre>
-     * Doing otherwise, will most likely cause loss of the desired argument order.
+     * Doing otherwise, may cause loss of the desired argument order.
      */
     public <T> @NotNull Argument<T> next(final @NotNull Class<T> type) {
         return new Argument<>(type, context, null, this);
     }
 
     /**
-     * Returns and removes next element at the beginning of this {@link ArgumentQueue},
+     * Returns next element at the beginning of this {@link ArgumentQueue},
      * as an {@link Argument Argument&lt;T&gt;} wrapper for specified {@link T} {@code type},
      * with exclusively specified {@link ArgumentParser ArgumentParser&lt;T&gt;} {@code parser}.
      * <br />
@@ -93,28 +126,35 @@ public final class ArgumentQueue {
      * // DO THAT INSTEAD
      * final Player target = arguments.next(Player.class).asRequired();
      * </pre>
-     * Doing otherwise, will most likely cause loss of the desired argument order.
+     * Doing otherwise, may cause loss of the desired argument order.
      */
     public <T> @NotNull Argument<T> next(final @NotNull Class<T> type, final @NotNull ArgumentParser<T> parser) {
         return new Argument<>(type, context, parser, this);
     }
 
     /**
-     * Returns and removes next {@link String} at the beginning of the this {@link ArgumentQueue}.
+     * Returns a copy of original {@link ArgumentQueue}.
+     *
+     * @apiNote This is experimental API that can change at any time.
      */
-    public @NotNull String nextString() throws MissingInputException {
-        try {
-            return this.removeNext();
-        } catch (final IndexOutOfBoundsException exc) {
-            throw new MissingInputException(exc);
-        }
+    @Experimental
+    public @NotNull ArgumentQueue original() {
+        return new ArgumentQueue(context, arguments);
     }
 
-    // Wrapped within seperate method so when IndexOutOfBoundsException is thrown, currentArgumentIndex is not increased
-    private String removeNext() throws IndexOutOfBoundsException {
-        final String next = arguments.remove(0);
-        currentArgumentIndex += 1;
-        return next;
+    /**
+     * Returns a copy of (this) {@link ArgumentQueue}.
+     *
+     * @apiNote This is experimental API that can change at any time.
+     */
+    @Experimental
+    public @NotNull ArgumentQueue peek() {
+        final ArgumentQueue queue = new ArgumentQueue(context, arguments);
+        // ...
+        while (queue.iterator.nextIndex() != this.iterator.nextIndex())
+            queue.iterator.next();
+        // ...
+        return queue;
     }
 
 }
