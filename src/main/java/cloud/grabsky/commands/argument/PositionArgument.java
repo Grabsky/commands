@@ -30,11 +30,11 @@ import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.ArgumentParseException;
 import cloud.grabsky.commands.exception.MissingInputException;
 import io.papermc.paper.math.Position;
-import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -42,33 +42,46 @@ import java.util.List;
  * 
  * @apiNote This is experimental API that can change at any time.
  */
-@Experimental // Inheriting @Experimental status from Paper
+@Experimental // Inheriting @Experimental status from Paper.
 public enum PositionArgument implements CompletionsProvider, ArgumentParser<Position> {
     /* SINGLETON */ INSTANCE;
 
     @Override
     public @NotNull List<String> provide(final @NotNull RootCommandContext context) {
-        final Location location = context.getExecutor().asPlayer().getLocation();
-        return Collections.singletonList(new StringBuilder()
-                .append(toRoundedDouble(location.x()))
-                .append(" ")
-                .append(toRoundedDouble(location.y()))
-                .append(" ")
-                .append(toRoundedDouble(location.z()))
-                .toString()
-        );
+        return List.of("@x @y @z");
     }
 
     @Override
     public Position parse(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) throws ArgumentParseException, MissingInputException {
-        final Double x = arguments.next(Double.class).asOptional();
-        final Double y = arguments.next(Double.class).asOptional();
-        final Double z = arguments.next(Double.class).asOptional();
+        final @NotNull String valueX = arguments.nextString();
+        final @NotNull String valueY = arguments.nextString();
+        final @NotNull String valueZ = arguments.nextString();
         // ...
-        if (x != null && y != null && z != null)
-            return Position.fine(x, y, z);
+        final @Nullable Player player = (context.getExecutor().isPlayer() == true) ? context.getExecutor().asPlayer() : null;
         // ...
-        throw new PositionArgument.Exception(x + " " + y + " " + z);
+        final Double x = (player != null && "@x".equalsIgnoreCase(valueX) == true) ? (Double) player.getLocation().x() : parseDouble(valueX);
+        final Double y = (player != null && "@y".equalsIgnoreCase(valueY) == true) ? (Double) player.getLocation().y() : parseDouble(valueY);
+        final Double z = (player != null && "@z".equalsIgnoreCase(valueZ) == true) ? (Double) player.getLocation().z() : parseDouble(valueZ);
+        // ...
+        if (x == null || y == null || z == null) {
+            final String input = new StringBuilder()
+                    .append(x != null ? toRoundedDouble(x) : valueX).append(" ")
+                    .append(y != null ? toRoundedDouble(y) : valueY).append(" ")
+                    .append(z != null ? toRoundedDouble(z) : valueZ)
+                    .toString();
+            // ...
+            throw new PositionArgument.Exception(input);
+        }
+        // ...
+        return Position.fine(x, y, z);
+    }
+
+    private static @Nullable Double parseDouble(final @NotNull String value) {
+        try {
+            return Double.parseDouble(value);
+        } catch (final NumberFormatException e) {
+            return null;
+        }
     }
 
     private static String toRoundedDouble(final double num) {
