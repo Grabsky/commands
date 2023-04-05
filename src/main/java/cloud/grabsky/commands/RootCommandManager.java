@@ -152,7 +152,7 @@ public final class RootCommandManager {
     /**
      * Registers command from specified {@link RootCommand} instance.
      */
-    public void registerCommand(final @NotNull RootCommand rCommand) {
+    public RootCommandManager registerCommand(final @NotNull RootCommand rCommand) {
         final RootCommandManager that = this; // Can also be resolved using 'RootCommandManager.this' but this is shorter and looks cleaner
 
         final Command bCommand = new Command(rCommand.getName()) {
@@ -165,24 +165,22 @@ public final class RootCommandManager {
                 try {
                     rCommand.onCommand(context, queue);
                     return true;
-                } catch (final CommandLogicException exc) {
-                    final Class<? extends CommandLogicException> exceptionClass = exc.getClass();
+                } catch (final CommandLogicException e) {
+                    final Class<? extends CommandLogicException> exceptionClass = e.getClass();
                     // Handling exceptions using ExceptionHandler<T> registry
-                    if (exc.isHandlerFinal() == false && that.getExceptionHandler(exceptionClass) != null) {
-                        ((ExceptionHandler) that.getExceptionHandler(exceptionClass)).handle(exceptionClass.cast(exc), context); // should not be null; raw cast required for compilation
+                    if (e.isHandlerFinal() == false && that.getExceptionHandler(exceptionClass) != null) {
+                        ((ExceptionHandler) that.getExceptionHandler(exceptionClass)).handle(exceptionClass.cast(e), context); // should not be null; raw cast required for compilation
                         return false;
                     }
                     // Handling exceptions using their Consumer<RootCommandContext>
-                    exc.accept(context);
+                    e.accept(context);
                     return false;
-                } catch (final Throwable exc) { // Handling any other exceptions...
-                    exc.printStackTrace();
+                } catch (final Throwable e) { // Handling any other exceptions...
+                    e.printStackTrace();
                     sender.sendMessage(UNEXPECTED_ERROR);
                     return false;
                 }
             }
-
-
 
             @Override
             public @NotNull List<String> tabComplete(final @NotNull CommandSender sender, final @NotNull String alias, final String @NotNull [] args) throws IllegalArgumentException {
@@ -217,6 +215,8 @@ public final class RootCommandManager {
         plugin.getServer().getCommandMap().register(plugin.getName(), bCommand);
         // Adding RootCommand to the command Set...
         commands.add(rCommand);
+        // ...
+        return this;
     }
 
     /**
@@ -224,7 +224,7 @@ public final class RootCommandManager {
      *
      * @throws IllegalArgumentException class is inaccessible or cannot be initialized.
      */
-    public <T extends RootCommand> void registerCommand(final @NotNull Class<T> commandClass) throws IllegalArgumentException {
+    public <T extends RootCommand> RootCommandManager registerCommand(final @NotNull Class<T> commandClass) throws IllegalArgumentException {
         try {
             final RootCommand commandObject = commandClass.getConstructor().newInstance();
             // Registering using this#registerCommand(RootCommand)...
@@ -232,6 +232,8 @@ public final class RootCommandManager {
         } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exc) {
             throw new IllegalArgumentException("Could not register command from " + commandClass.getName() + " class.", exc);
         }
+        // ...
+        return this;
     }
 
     /**
@@ -259,11 +261,13 @@ public final class RootCommandManager {
     /**
      * Sets {@link ArgumentParser ArgumentParser&lt;T&gt;} (parser) as a default argument parser for {@link T} (type).
      */
-     public <T> void setArgumentParser(final @NotNull Class<T> type, final @Nullable ArgumentParser<T> parser) {
+     public <T> RootCommandManager setArgumentParser(final @NotNull Class<T> type, final @Nullable ArgumentParser<T> parser) {
          if (parser == null && argumentParsers.containsKey(type) == true)
              argumentParsers.remove(type);
          // ...
          argumentParsers.put(type, parser);
+         // ...
+         return this;
     }
 
     /* EXCEPTION HANDLER */
@@ -281,8 +285,10 @@ public final class RootCommandManager {
     /**
      * Sets {@link ExceptionHandler ExceptionHandler&lt;E&gt;} (handler) as a default exception handler for {@link E} (type).
      */
-    public <E extends CommandLogicException> void setExceptionHandler(final @NotNull Class<E> type, final @Nullable ExceptionHandler<E> handler) {
+    public <E extends CommandLogicException> RootCommandManager setExceptionHandler(final @NotNull Class<E> type, final @Nullable ExceptionHandler<E> handler) {
         exceptionHandlers.put(type, handler);
+        // ...
+        return this;
     }
 
     /* COMPLETIONS PROVIDER */
@@ -300,18 +306,22 @@ public final class RootCommandManager {
     /**
      * Sets {@link CompletionsProvider CompletionsProvider} (provider) as a default completions provider for {@link T} (type).
      */
-    public <T> void setCompletionsProvider(final @NotNull Class<T> type, final @Nullable CompletionsProvider provider) {
+    public <T> RootCommandManager setCompletionsProvider(final @NotNull Class<T> type, final @Nullable CompletionsProvider provider) {
         if (provider == null && completionsProviders.containsKey(type) == true)
             completionsProviders.remove(type);
         // ...
         completionsProviders.put(type, provider);
+        // ...
+        return this;
     }
 
     /**
      * Applies {@link Consumer<RootCommandManager> Consumer&lt;RootCommandManager&gt;} (template) on this {@link RootCommandManager}.
      */
-    public void apply(final @NotNull Consumer<RootCommandManager> template) {
+    public RootCommandManager apply(final @NotNull Consumer<RootCommandManager> template) {
         template.accept(this);
+        // ...
+        return this;
     }
 
     /* STATIC HELPERS */
