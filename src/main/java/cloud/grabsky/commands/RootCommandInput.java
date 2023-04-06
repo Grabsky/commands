@@ -58,6 +58,13 @@ public final class RootCommandInput {
         return (index < arguments.length) ? arguments[index] : "";
     }
 
+    /**
+     * Returns length (count) of arguments in this input.
+     */
+    public int length() {
+        return arguments.length;
+    }
+
     @Override
     public String toString() {
         return input;
