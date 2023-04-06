@@ -26,8 +26,10 @@ package cloud.grabsky.commands.component;
 import cloud.grabsky.commands.RootCommandContext;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.util.Arrays;
+import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static cloud.grabsky.commands.util.Arrays.toArrayList;
@@ -49,6 +51,31 @@ public interface CompletionsProvider {
 
     static @NotNull CompletionsProvider of(final String... completions) {
         return (context) -> toArrayList(completions);
+    }
+
+    /**
+     * Returns instance of {@link CompletionsProvider} created out of specified elements.
+     * This method handles elements that are either {@link String} or {@link Class} where the second
+     * is used to query completions using {@link CompletionsProvider} registered for that type.
+     * Elements of other types are ignored.
+     *
+     * @apiNote This is experimental API that can change at any time.
+     */
+    @Experimental
+    static @NotNull CompletionsProvider of(final Object... completions) {
+        return (context) -> {
+            final ArrayList<String> result = new ArrayList<>();
+            // ...
+            for (final var element : completions) {
+                if (element instanceof Class<?> type)
+                    for (final String completion : context.getManager().getCompletionsProvider(type).provide(context))
+                        result.add(completion);
+                else if (element instanceof String completion)
+                    result.add(completion);
+            }
+            // ...
+            return result;
+        };
     }
 
     static @NotNull CompletionsProvider of(final Class<?> type) {
