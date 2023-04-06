@@ -62,7 +62,7 @@ public final class RootCommandInput {
      * Returns length (count) of arguments in this input.
      */
     public int length() {
-        return arguments.length;
+        return Math.max(0, arguments.length - 1);
     }
 
     @Override
