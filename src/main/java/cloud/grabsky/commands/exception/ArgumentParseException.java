@@ -34,7 +34,7 @@ import lombok.Getter;
 public class ArgumentParseException extends CommandLogicException {
 
     @Getter(AccessLevel.PUBLIC)
-    private final String inputValue;
+    protected final String inputValue;
 
     public ArgumentParseException(final String inputValue) {
         super();
