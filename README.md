@@ -29,7 +29,7 @@ dependencies {
     implementation("cloud.grabsky:commands:[_VERSION_]")
 }
 ```
-Consider **[relocating](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent version mismatch issues.
+Consider **[relocating](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent version mismatch issues. This can be ignored if your plugin is a **[Paper plugin](https://docs.papermc.io/paper/dev/getting-started/paper-plugins)** with **[isolated classloader](https://docs.papermc.io/paper/dev/getting-started/paper-plugins#classloading-isolation)**.
 
 <br />
 
