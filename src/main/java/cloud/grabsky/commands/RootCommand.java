@@ -30,6 +30,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * {@link RootCommand} represents a server command.
@@ -40,8 +44,11 @@ public abstract class RootCommand {
     @Getter(AccessLevel.PUBLIC)
     private final @NotNull String name;
 
-    @Getter(AccessLevel.PUBLIC)
-    private final @Nullable String[] aliases;
+    private final @Nullable List<String> aliases;
+
+    public @Nullable @Unmodifiable List<String> getAliases() {
+        return aliases != null ? Collections.unmodifiableList(aliases) : null;
+    }
 
     @Getter(AccessLevel.PUBLIC)
     private final @Nullable String permission;

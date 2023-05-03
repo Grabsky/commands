@@ -199,8 +199,8 @@ public final class RootCommandManager {
 
         };
         // Setting Bukkit aliases...
-        if (rCommand.getAliases() != null && rCommand.getAliases().length > 0)
-            bCommand.setAliases(toArrayList(rCommand.getAliases()));
+        if (rCommand.getAliases() != null && rCommand.getAliases().isEmpty() == false)
+            bCommand.setAliases(rCommand.getAliases());
         // Setting Bukkit permission...
         if (rCommand.getPermission() != null)
             bCommand.setPermission(rCommand.getPermission());
