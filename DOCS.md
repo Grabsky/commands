@@ -1,4 +1,4 @@
-# Documentation
+# Documentation - 1.X
 Documentation page is still in progress.
 
 ## Overview
@@ -7,14 +7,16 @@ Documentation page is still in progress.
 3. **[Exceptions](#exceptions)** - learn about built-in exceptions and how to handle them.
 4. **[Completions](#completions)** - learn about command completions and how to use them.
 
+<br />
+
 ## Commands
 Defining a simple `/tell <player> <message>` command:
 ```java
 public final class TellCommand extends RootCommand {
 
     public TellCommand() {
-        super("tell", { "w", "pm" }, "example.command.tell", "/tell <player> <message>", "Sends private message to specified player.");
-        //    name    aliases        permission              usage                       description
+        super("tell", List.of("w", "pm"), "example.command.tell", "/tell <player> <message>", "Sends private message to specified player.");
+        //    name    aliases             permission              usage                       description
     }
 
     @Override
@@ -39,10 +41,10 @@ public final class TellCommand extends RootCommand {
 
 Registering a command:
 ```java
-// EXAMPLE 1 - for regular classes
+// EXAMPLE 1 - Regular classes.
 handler.registerCommand(new ExampleCommand(plugin));
 
-// EXAMPLE 3 - for classes with zero-arg constructors
+// EXAMPLE 2 - Zero-arg-constructor classes can be optionally registered like that.
 handler.registerCommand(ExampleCommand.class);
 ```
 <br />
@@ -52,60 +54,51 @@ Built-in arguments. All of them implement `ArgumentParser<T>` and some of them `
 ```scala
 ┌─ cloud.grabsky.commands.argument
 │   ├─ StringArgument
-│   │   ├─ StringArgument.LITERAL ────── (String) (default)
-│   │   │   └─ eg. "string"
-│   │   │
-│   │   └─ StringArgument.GREEDY ─────── (String)
-│   │       └─ eg. "string with spaces"
-│   │
-│   ├─ BooleanArgument ───────────────── (Boolean) (default)
-│   │   └─ either "true" or "false"
-│   │
-│   ├─ IntegerArgument ───────────────── (Integer) (default)
-│   │   └─ eg. "1" or "-27"
-│   │
-│   ├─ FloatArgument ─────────────────── (Float) (default)
-│   │   └─ eg. "1.5" or "-27.777"
-│   │
-│   ├─ DoubleArgument ────────────────── (Double) (default)
-│   │   └─ eg. "1.000000005" or "-27.7"
-│   │
+│   │   ├─ StringArgument.LITERAL ──────── (String) (default)
+│   │   └─ StringArgument.GREEDY ───────── (String)
 │   ├─ ComponentArgument
-│   │   ├─ ComponentArgument.LITERAL ─── (Component) (default)
-│   │   │   └─ eg. "<green>green_string"
-│   │   │
-│   │   └─ ComponentArgument.GREEDY ──── (Component)
-│   │       └─ eg. "<rainbow>rainbow string with spaces"
-│   │
-│   ├─ EnchantmentArgument ───────────── (Enchantment) (default)
-│   │   └─ eg. "minecraft:sharpness"
-│   │
-│   ├─ EntityTypeArgument ────────────── (EntityType) (default)
-│   │   └─ eg. "minecraft:creeper"
-│   │
-│   ├─ MaterialArgument ──────────────── (Material) (default)
-│   │   └─ eg. "minecraft:diamond"
-│   │
-│   ├─ PlayerArgument ────────────────── (Player) (default)
-│   │   └─ eg. "@s" or "PlayerName"
-│   │
-│   ├─ PositionArgument ──────────────── (Position) (default)
-│   │   └─ eg. "0.0 64.0 0.0"
-│   │
-│   └─ WorldArgument ─────────────────── (World) (default)
-└─      └─ eg. "minecraft:the_end"
+│   │   ├─ ComponentArgument.LITERAL ───── (Component) (default)
+│   │   └─ ComponentArgument.GREEDY ────── (Component)
+│   ├─ ShortArgument
+│   │   └─ ShortArgument.DEFAULT_RANGE ─── (Short) (default)
+│   │   └─ ShortArgument.ofRange(...) ──── (Short)
+│   ├─ IntegerArgument
+│   │   └─ IntegerArgument.DEFAULT_RANGE ─ (Integer) (default)
+│   │   └─ IntegerArgument.ofRange(...) ── (Integer)
+│   ├─ LongArgument
+│   │   └─ LongArgument.DEFAULT_RANGE ──── (Long) (default)
+│   │   └─ LongArgument.ofRange(...) ───── (Long)
+│   ├─ FloatArgument
+│   │   └─ FloatArgument.DEFAULT_RANGE ─── (Float) (default)
+│   │   └─ FloatArgument.ofRange(...) ──── (Float)
+│   ├─ DoubleArgument
+│   │   └─ DoubleArgument.DEFAULT_RANGE ── (Double) (default)
+│   │   └─ DoubleArgument.ofRange(...) ─── (Double)
+│   ├─ BooleanArgument ─────────────────── (Boolean)
+│   ├─ EnchantmentArgument ─────────────── (Enchantment)
+│   ├─ EntityTypeArgument ──────────────── (EntityType)
+│   ├─ MaterialArgument ────────────────── (Material)
+│   ├─ OfflinePlayerArgument ───────────── (OfflinePlayer)
+│   ├─ PlayerArgument ──────────────────── (Player)
+│   ├─ PositionArgument ────────────────── (Position)
+│   ├─ UUIDArgument ────────────────────── (UUID)
+└─  └─ WorldArgument ───────────────────── (World)
 ```
 
 Using non-default argument parsers:
 ```java
 @Override
+// Example command: /edit-translations (property) (value)
 public void onCommand(final RootCommandContext context, final ArgumentQueue arguments) {
-    // getting command executor as CommandSender
+    // Getting command executor and trying to cast it to a Player.
     final CommandSender sender = context.getExecutor().asCommandSender();
-    // getting next parameter as "greedy" string by specifying argument parser
-    final String longText = arguments.next(String.class, StringArgument.GREEDY).asRequired();
-    // displaying text to the sender
-    sender.sendMessage(longText);
+    // Parsing NEXT command argument to (LITERAL) String.
+    final String property = arguments.next(String.class).asRequired();
+    final String value = arguments.next(String.class, StringArgument.GREEDY).asRequired();
+    // Doing some command logic... following line is just an example.
+    translations.set(property, value);
+    // Sending confirmation message to the command executor.
+    sender.sendMessage("Property '" + property + "' has now value of '" + value + "'");
 }
 ```
 
@@ -113,20 +106,35 @@ public void onCommand(final RootCommandContext context, final ArgumentQueue argu
 
 ## Exceptions
 Built-in exceptions:
-```scala
+```scala│
 ┌─ CommandLogicException
 │   ├─ ArgumentParseException
-│   │   ├─ BooleanParseException ───────── (BooleanArgument)
-│   │   ├─ EnchantmentParseException ───── (EnchantmentArgument)
-│   │   ├─ MaterialParseException ──────── (MaterialArgument)
-│   │   ├─ NamespacedKeyParseException ─── (NamespacedKeyArgument)
-│   │   ├─ NumberParseException
-│   │   │   ├─ IntegerParseException ───── (IntegerArgument)
-│   │   │   ├─ DoubleParseException ────── (DoubleArgument)
-│   │   │   └─ FloatParseException ─────── (FloatArgument)
-│   │   ├─ PlayerParseException ────────── (PlayerArgument)
-│   │   ├─ PositionParseException ──────── (PositionArgument)
-│   │   └─ WorldParseException ─────────── (WorldArugment)
+│   │   ├─ StringArgument.Exception
+│   │   ├─ ComponentArgument.Exception
+│   │   ├─ ShortArgument
+│   │   │   └─ ShortArgument.ParseException
+│   │   │   └─ ShortArgument.RangeException
+│   │   ├─ IntegerArgument
+│   │   │   └─ IntegerArgument.ParseException
+│   │   │   └─ IntegerArgument.RangeException
+│   │   ├─ LongArgument
+│   │   │   └─ LongArgument.ParseException
+│   │   │   └─ LongArgument.RangeException
+│   │   ├─ FloatArgument
+│   │   │   └─ FloatArgument.ParseException
+│   │   │   └─ FloatArgument.RangeException
+│   │   ├─ DoubleArgument
+│   │   │   └─ DoubleArgument.ParseException
+│   │   │   └─ DoubleArgument.RangeException
+│   │   ├─ BooleanArgument.Exception
+│   │   ├─ EnchantmentArgument.Exception
+│   │   ├─ EntityTypeArgument.Exception
+│   │   ├─ MaterialArgument.Exception
+│   │   ├─ OfflinePlayerArgument.Exception
+│   │   ├─ PlayerArgument.Exception
+│   │   ├─ PositionArgument.Exception
+│   │   ├─ UUIDArgument.Exception
+│   │   └─ WorldArgument.Exception
 │   ├─ CommandConditionException
 │   ├─ IncompatibleParserException
 │   ├─ IncompatibleSenderException

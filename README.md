@@ -1,10 +1,10 @@
 # grabsky/commands
-[![](https://github.com/Grabsky/commands/actions/workflows/gradle.yml/badge.svg)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
-[![](https://www.codefactor.io/repository/github/grabsky/commands/badge/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers.
+[![](https://img.shields.io/github/actions/workflow/status/Grabsky/commands/gradle.yml)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
+[![](https://img.shields.io/codefactor/grade/github/Grabsky/commands/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)
+[![](https://img.shields.io/github/v/release/Grabsky/commands)](https://github.com/Grabsky/commands/releases/latest)  
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. Project *should* be stable as of version `1.X` but expect breaking changes between future releases.
 
-> **Warning**  
-> Breaking changes are likely to happen before a stable release. Use at your own risk.
+Brigadier is not currently supported, nor is it guaranteed to be supported in the future.
 
 <br />
 
@@ -14,10 +14,12 @@ Requires **Java 17** (or higher) and **Paper 1.19.4** (or higher).
 <br />
 
 ## Getting Started
-To use this project in your plugin, add following repository:
+To use this project in your plugin, add following repository(-ies):
 ```groovy
 repositories {
-    // Snapshots repository. Nothing is published to the main repository until a stable release.
+    // Releases repository.
+    maven { url = "https://repo.grabsky.cloud/releases" }
+    // Snapshots repository. (unstable api)
     maven { url = "https://repo.grabsky.cloud/snapshots" }
 }
 ```
@@ -25,11 +27,10 @@ Then specify dependency:
 ```groovy
 dependencies {
     // Snapshots use first seven (7) characters of commit hash as a version.
-    // NOTE: Only pushed (built) commits are available in the repository.
+    // NOTE: Only pushed (and successfully built) commits are available in the repository.
     implementation("cloud.grabsky:commands:[_VERSION_]")
 }
 ```
-Consider **[relocating](https://imperceptiblethoughts.com/shadow/configuration/relocation/)** to prevent version mismatch issues. This can be ignored if your plugin is a **[Paper plugin](https://docs.papermc.io/paper/dev/getting-started/paper-plugins)** with **[isolated classloader](https://docs.papermc.io/paper/dev/getting-started/paper-plugins#classloading-isolation)**.
 
 <br />
 
