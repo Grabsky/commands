@@ -51,7 +51,7 @@ handler.registerCommand(ExampleCommand.class);
 
 ## Arguments
 Built-in arguments. All of them implement `ArgumentParser<T>` and some of them `CompletionsProvider`:
-```scala
+```python
 ┌─ cloud.grabsky.commands.argument
 │   ├─ StringArgument
 │   │   ├─ StringArgument.LITERAL ──────── (String) (default)
@@ -106,7 +106,7 @@ public void onCommand(final RootCommandContext context, final ArgumentQueue argu
 
 ## Exceptions
 Built-in exceptions:
-```scala│
+```python
 ┌─ CommandLogicException
 │   ├─ ArgumentParseException
 │   │   ├─ StringArgument.Exception
@@ -143,7 +143,7 @@ Built-in exceptions:
 
 By default, all exceptions send non user-friendly errors. Here's how to override them:
 ```java
-handler.setExceptionHandler(BooleanParseException.class, (exc, context) -> {
+handler.setExceptionHandler(BooleanArgument.Exception.class, (exc, context) -> {
     context.getExecutor().asCommandSender().sendMessage("Invalid input for boolean argument: " + exc.getInputValue());
 });
 ```
