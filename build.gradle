@@ -15,7 +15,7 @@ final hash7 = "git rev-parse --verify --short HEAD".execute().text.trim()
 publishing {
     repositories {
         maven {
-            url = "https://maven.pkg.github.com/octocat/hello-world"
+            url = "https://maven.pkg.github.com/Grabsky/commands"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
