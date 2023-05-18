@@ -4,9 +4,6 @@ on:
   push:
     branches: ["main", "dev/gh-packages"] # TESTING
 
-permissions:
-  contents: read
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,13 +12,11 @@ jobs:
       packages: write
     steps:
     - uses: actions/checkout@v3
-    - name: JDK 17
-      uses: actions/setup-java@v3
+    - uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
-    - name: Publish
-      uses: gradle/gradle-build-action@v2
+    - uses: gradle/gradle-build-action@v2
       with:
         arguments: publish
       env:
