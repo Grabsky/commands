@@ -27,3 +27,4 @@ jobs:
       env:
         REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
         REPO_SECRET: ${{ secrets.REPO_SECRET }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
