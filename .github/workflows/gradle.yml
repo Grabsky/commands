@@ -23,3 +23,17 @@ jobs:
         REPO_USERNAME: ${{ secrets.REPO_USERNAME }}
         REPO_SECRET: ${{ secrets.REPO_SECRET }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  tag:
+    runs-on: ubuntu-lastest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - id: short_commit_hash
+      run: "echo ${{ env.GITHUB_SHA }} | cut -c 1-7"
+      env:
+        GITHUB_SHA: ${{ vars.GITHUB_SHA
+    - uses: mathieudutour/github-tag-action@v6.1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        custom_tag: ${{ steps.short_commit_hash }}
