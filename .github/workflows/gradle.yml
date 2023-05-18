@@ -24,7 +24,7 @@ jobs:
         REPO_SECRET: ${{ secrets.REPO_SECRET }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   tag:
-    runs-on: ubuntu-lastest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
