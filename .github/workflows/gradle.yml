@@ -2,7 +2,7 @@ name: Gradle Publish
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "dev/gh-packages"] # TESTING
 
 permissions:
   contents: read
