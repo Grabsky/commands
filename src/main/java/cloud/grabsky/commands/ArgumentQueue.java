@@ -25,21 +25,17 @@ package cloud.grabsky.commands;
 
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.exception.MissingInputException;
-import com.google.common.collect.Iterators;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 import static java.util.Collections.unmodifiableList;
-import static org.jetbrains.annotations.ApiStatus.*;
+import static org.jetbrains.annotations.ApiStatus.Experimental;
 
 /**
  * {@link ArgumentQueue} contains all arguments provided for the executed command and exposes
@@ -53,7 +49,7 @@ public final class ArgumentQueue {
     private final @NotNull RootCommandContext context;
 
     @Getter(AccessLevel.PUBLIC)
-    private final @Unmodifiable List<String> arguments;
+    private final @NotNull @Unmodifiable List<String> arguments;
 
     // NOTE: Iterator should not be directly exposed to the API.
     private final @NotNull ListIterator<String> iterator;
