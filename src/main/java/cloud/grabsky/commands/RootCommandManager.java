@@ -46,6 +46,7 @@ import cloud.grabsky.commands.component.ExceptionHandler;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import cloud.grabsky.commands.exception.IncompatibleParserException;
 import cloud.grabsky.commands.util.Arrays;
+import cloud.grabsky.commands.util.Reflections;
 import io.papermc.paper.math.Position;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -64,6 +65,8 @@ import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,6 +76,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static cloud.grabsky.commands.util.Arrays.toArrayList;
 import static net.kyori.adventure.text.Component.text;
@@ -94,6 +98,7 @@ public final class RootCommandManager {
     private final Map<Class<?>, ArgumentParser<?>> argumentParsers;
     private final Map<Class<?>, ExceptionHandler<?>> exceptionHandlers;
     private final Map<Class<?>, CompletionsProvider> completionsProviders;
+    private final Map<Class<?>, Function<RootCommand, ?>> dependencies;
 
     private static final Component UNEXPECTED_ERROR = text("An unexpected error occurred while executing the command.", RED);
 
@@ -103,6 +108,7 @@ public final class RootCommandManager {
         this.argumentParsers = new HashMap<>();
         this.exceptionHandlers = new HashMap<>();
         this.completionsProviders = new HashMap<>();
+        this.dependencies = new HashMap<>();
         // java.lang.String
         this.setArgumentParser(String.class, StringArgument.LITERAL);
         // java.lang.Short
@@ -152,8 +158,11 @@ public final class RootCommandManager {
     /**
      * Registers command from specified {@link RootCommand} instance.
      */
-    public RootCommandManager registerCommand(final @NotNull RootCommand rCommand) {
+    public RootCommandManager registerCommand(final @NotNull RootCommand rCommand) throws IllegalArgumentException {
         final RootCommandManager that = this; // Can also be resolved using 'RootCommandManager.this' but this is shorter and looks cleaner
+
+        if (rCommand.getName() == null || rCommand.getName().isEmpty() == true)
+            throw new IllegalArgumentException("Command definition in class " + rCommand.getClass().getName() + " is unnamed.");
 
         final Command bCommand = new Command(rCommand.getName()) {
 
@@ -199,16 +208,16 @@ public final class RootCommandManager {
 
         };
         // Setting Bukkit aliases...
-        if (rCommand.getAliases() != null && rCommand.getAliases().isEmpty() == false)
+        if (rCommand.getAliases() != null && rCommand.getAliases().isEmpty() == false && rCommand.getAliases().get(0).isEmpty() == false)
             bCommand.setAliases(rCommand.getAliases());
         // Setting Bukkit permission...
-        if (rCommand.getPermission() != null)
+        if (rCommand.getPermission() != null && rCommand.getPermission().isEmpty() == false)
             bCommand.setPermission(rCommand.getPermission());
         // Setting Bukkit usage...
-        if (rCommand.getUsage() != null)
+        if (rCommand.getUsage() != null && rCommand.getUsage().isEmpty() == false)
             bCommand.setUsage(rCommand.getUsage());
         // Setting Bukkit description...
-        if (rCommand.getDescription() != null) {
+        if (rCommand.getDescription() != null && rCommand.getDescription().isEmpty() == false) {
             bCommand.setDescription(rCommand.getDescription());
         }
         // Registering org.bukkit.Command to the server...
@@ -226,10 +235,37 @@ public final class RootCommandManager {
      */
     public <T extends RootCommand> RootCommandManager registerCommand(final @NotNull Class<T> commandClass) throws IllegalArgumentException {
         try {
-            final RootCommand commandObject = commandClass.getConstructor().newInstance();
+            final Constructor<? extends RootCommand> constructor = commandClass.getDeclaredConstructor();
+            // Making constructor accessible.
+            constructor.setAccessible(true);
+            // Creating new instance of class object.
+            final RootCommand commandObject = commandClass.getDeclaredConstructor().newInstance();
+            // Checking for presence of @Command annotation.
+            if (commandClass.isAnnotationPresent(cloud.grabsky.commands.Command.class) == true) {
+                // Getting @Command annotation.
+                final @NotNull cloud.grabsky.commands.Command command = commandClass.getAnnotation(cloud.grabsky.commands.Command.class);
+                // Setting fields with values specified within @Command annotation.
+                Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("name"), command.name());
+                Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("aliases"), List.of(command.aliases()));
+                Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("permission"), command.permission());
+                Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("usage"), command.usage());
+                Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("description"), command.description());
+            }
+            // Iterating over all declared fields of command class to look for dependencies...
+            for (final Field field : commandClass.getDeclaredFields()) {
+                // Checking for presence of @Dependency annotation.
+                if (field.isAnnotationPresent(Dependency.class) == true) {
+                    // Throwing an exception in case no dependency "resolver" was specified for that type.
+                    if (dependencies.containsKey(field.getType()) == false)
+                        throw new IllegalStateException(commandClass.getName() + " declared field " + field.getName() + " of type " + field.getType().getName() + " as @Dependency and no dependency for that type has been registered.");
+                    // Setting the dependency field.
+                    field.setAccessible(true);
+                    field.set(commandObject, dependencies.getOrDefault(field.getType(), null).apply(commandObject));
+                }
+            }
             // Registering using this#registerCommand(RootCommand)...
             this.registerCommand(commandObject);
-        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException exc) {
+        } catch (final InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | NoSuchFieldException exc) {
             throw new IllegalArgumentException("Could not register command from " + commandClass.getName() + " class.", exc);
         }
         // ...
@@ -320,6 +356,18 @@ public final class RootCommandManager {
      */
     public RootCommandManager apply(final @NotNull Consumer<RootCommandManager> template) {
         template.accept(this);
+        // ...
+        return this;
+    }
+
+    public <T> RootCommandManager registerDependency(final Class<T> type, final @NotNull T dependency) {
+        dependencies.put(type, (___) -> dependency);
+        // ...
+        return this;
+    }
+
+    public <T> RootCommandManager registerDependency(final Class<T> type, final @NotNull Function<RootCommand, T> function) {
+        dependencies.put(type, function);
         // ...
         return this;
     }

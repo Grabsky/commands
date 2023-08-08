@@ -27,9 +27,9 @@ import cloud.grabsky.commands.component.CompletionsProvider;
 import cloud.grabsky.commands.exception.CommandLogicException;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Collections;
@@ -38,26 +38,38 @@ import java.util.List;
 /**
  * {@link RootCommand} represents a server command.
  */
-@RequiredArgsConstructor(access = AccessLevel.PUBLIC)
 public abstract class RootCommand {
 
-    @Getter(AccessLevel.PUBLIC)
-    private final @NotNull String name;
+    /**
+     * Empty constructor to be used along with {@link Command @Command} annotation.
+     */
+    public RootCommand() { /* EMPTY */ }
 
-    private final @Nullable List<String> aliases;
-
-    public @Nullable @Unmodifiable List<String> getAliases() {
-        return aliases != null ? Collections.unmodifiableList(aliases) : null;
+    /**
+     * Default constructor. When {@link Command @Command} is present, this constructor is not called.
+     */
+    public RootCommand(final @NotNull String name, final @Nullable List<String> aliases, final @Nullable String permission, final @Nullable String usage, final @Nullable String description) {
+        this.name = name;
+        this.aliases = (aliases != null) ? Collections.unmodifiableList(aliases) : null;
+        this.permission = permission;
+        this.usage = usage;
+        this.description = description;
     }
 
     @Getter(AccessLevel.PUBLIC)
-    private final @Nullable String permission;
+    private @UnknownNullability String name;
 
     @Getter(AccessLevel.PUBLIC)
-    private final @Nullable String usage;
+    private @Unmodifiable @Nullable List<String> aliases;
 
     @Getter(AccessLevel.PUBLIC)
-    private final @Nullable String description;
+    private @Nullable String permission;
+
+    @Getter(AccessLevel.PUBLIC)
+    private @Nullable String usage;
+
+    @Getter(AccessLevel.PUBLIC)
+    private @Nullable String description;
 
     /**
      * Handles command completions/suggestions that pop-up for the client.
@@ -65,7 +77,7 @@ public abstract class RootCommand {
      * @apiNote You should not {@code try...catch} any {@link CommandLogicException} thrown by this method.
      */
     public @NotNull CompletionsProvider onTabComplete(final @NotNull RootCommandContext context, final int index) throws CommandLogicException {
-        return CompletionsProvider.EMPTY; // commands have no completions by default
+        return CompletionsProvider.EMPTY; // Commands have no completions by default.
     }
 
     /**
