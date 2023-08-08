@@ -23,6 +23,7 @@
  */
 package cloud.grabsky.commands;
 
+import cloud.grabsky.commands.annotation.Dependency;
 import cloud.grabsky.commands.argument.BooleanArgument;
 import cloud.grabsky.commands.argument.ComponentArgument;
 import cloud.grabsky.commands.argument.DoubleArgument;
@@ -87,7 +88,6 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
  * used to register commands or customize their handling process.
  */
 // TO-DO: Finish JavaDocs and GitHub documentation.
-// TO-DO: ArgumentQueue#peek (?)
 // TO-DO: More testing and improvements based on Q/A results.
 public final class RootCommandManager {
 
@@ -192,7 +192,7 @@ public final class RootCommandManager {
             }
 
             @Override
-            public @NotNull List<String> tabComplete(final @NotNull CommandSender sender, final @NotNull String alias, final String @NotNull [] args) throws IllegalArgumentException {
+            public @NotNull List<String> tabComplete(final @NotNull CommandSender sender, final @NotNull String alias, final @NotNull String @NotNull [] args) throws IllegalArgumentException {
                 // Disabling completions for invalid input
                 if (args.length > 1 && args[args.length - 2].isEmpty() == true) {
                     return Arrays.EMPTY_STRING_LIST;
@@ -241,9 +241,9 @@ public final class RootCommandManager {
             // Creating new instance of class object.
             final RootCommand commandObject = commandClass.getDeclaredConstructor().newInstance();
             // Checking for presence of @Command annotation.
-            if (commandClass.isAnnotationPresent(cloud.grabsky.commands.Command.class) == true) {
+            if (commandClass.isAnnotationPresent(cloud.grabsky.commands.annotation.Command.class) == true) {
                 // Getting @Command annotation.
-                final @NotNull cloud.grabsky.commands.Command command = commandClass.getAnnotation(cloud.grabsky.commands.Command.class);
+                final @NotNull cloud.grabsky.commands.annotation.Command command = commandClass.getAnnotation(cloud.grabsky.commands.annotation.Command.class);
                 // Setting fields with values specified within @Command annotation.
                 Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("name"), command.name());
                 Reflections.setInstanceField(commandObject, commandClass.getSuperclass().getDeclaredField("aliases"), List.of(command.aliases()));
