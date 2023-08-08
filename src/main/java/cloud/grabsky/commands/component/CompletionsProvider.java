@@ -30,6 +30,8 @@ import org.jetbrains.annotations.ApiStatus.Experimental;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static cloud.grabsky.commands.util.Arrays.toArrayList;
@@ -61,17 +63,21 @@ public interface CompletionsProvider {
      *
      * @apiNote This is experimental API that can change at any time.
      */
-    @Experimental
-    static @NotNull CompletionsProvider of(final Object... completions) {
+    // TO-DO: Replace with JDK 21 enhanced switch.
+    @Experimental @SuppressWarnings("unchecked")
+    static @NotNull CompletionsProvider of(final Object... any) {
         return (context) -> {
             final ArrayList<String> result = new ArrayList<>();
             // ...
-            for (final var element : completions) {
+            for (final Object element : any) {
                 if (element instanceof Class<?> type)
-                    for (final String completion : context.getManager().getCompletionsProvider(type).provide(context))
-                        result.add(completion);
+                    result.addAll(context.getManager().getCompletionsProvider(type).provide(context));
                 else if (element instanceof String completion)
                     result.add(completion);
+                else if (element instanceof String[] completions)
+                    Collections.addAll(result, completions);
+                else if (element instanceof Collection<?> completions && completions.isEmpty() == false && completions.iterator().next() instanceof String)
+                    result.addAll((Collection<String>) completions);
             }
             // ...
             return result;
