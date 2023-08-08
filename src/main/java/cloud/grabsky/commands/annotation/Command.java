@@ -1,4 +1,4 @@
-package cloud.grabsky.commands;
+package cloud.grabsky.commands.annotation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

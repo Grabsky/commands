@@ -1,4 +1,4 @@
-package cloud.grabsky.commands;
+package cloud.grabsky.commands.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
