@@ -25,9 +25,11 @@ package cloud.grabsky.commands;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.experimental.Accessors;
+import org.checkerframework.checker.units.qual.Acceleration;
 import org.jetbrains.annotations.NotNull;
-
-import static org.jetbrains.annotations.ApiStatus.Experimental;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.UnknownNullability;
 
 /**
  * Represents command input supplied by the executor.
@@ -40,29 +42,36 @@ public final class RootCommandInput {
     @Getter(AccessLevel.PUBLIC)
     private final String label;
 
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PUBLIC)
+    private final int length;
+
+    @Accessors(fluent = true)
+    @Getter(AccessLevel.PUBLIC)
+    private final int maxIndex;
+
     private final String[] arguments;
 
-    /* PACKAGE PRIVATE */ RootCommandInput(final String label, final String[] rawArguments) {
+    /* PACKAGE PRIVATE */ RootCommandInput(final @NotNull String label, final @NotNull String[] rawArguments) {
         this.label = label;
         this.input = toStringInput(label, rawArguments);
         this.arguments = this.input.split(" ");
+        this.length = arguments.length;
+        this.maxIndex = Math.max(0, arguments.length - 1);
     }
 
     /**
-     * Returns {@link String} argument at specified index. or {@code ""} (empty string) if out of bounds.
-     *
-     * @apiNote This is experimental API that can change at any time.
+     * Returns {@link String} argument at specified index, or {@code null} if out of bounds.
      */
-    @Experimental
-    public @NotNull String at(final int index) {
-        return (index < arguments.length) ? arguments[index] : "";
+    public @Nullable String at(final int index) {
+        return (index < arguments.length) ? arguments[index] : null;
     }
 
     /**
-     * Returns length (count) of arguments in this input.
+     * Returns {@link String} argument at specified index, or provided {@code def} if out of bounds.
      */
-    public int length() {
-        return Math.max(0, arguments.length - 1);
+    public @UnknownNullability String at(final int index, final @Nullable String def) {
+        return (index < arguments.length) ? arguments[index] : def;
     }
 
     @Override
