@@ -23,9 +23,18 @@
  */
 package cloud.grabsky.commands;
 
+import cloud.grabsky.commands.condition.Condition;
+import cloud.grabsky.commands.exception.CommandLogicException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Async;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
+
+import static org.jetbrains.annotations.ApiStatus.*;
 
 /**
  * {@link RootCommandContext} represents command execution details.
@@ -48,5 +57,24 @@ public final class RootCommandContext {
     public String getLabel() {
         return input.getLabel();
     }
+
+    /**
+     * Tests provided condition with (this) {@link RootCommandContext}. When failed,  are executed upon failure.
+     */
+    @Experimental
+    public void testCondition(final @NotNull Condition condition) throws CommandLogicException {
+        if (condition.test(this) == false)
+            throw CommandLogicException.asFinal((___0, ___1) -> condition.accept(this));
+    }
+
+    /**
+     * Tests provided condition with (this) {@link RootCommandContext}. No further instructions are executed upon failure.
+     */
+    @Experimental
+    public void testCondition(final @NotNull Condition condition, final @NotNull Consumer<RootCommandContext> onFailure) throws CommandLogicException {
+        if (condition.test(this) == false)
+            throw CommandLogicException.asFinal((___0, ___1) -> onFailure.accept(this));
+    }
+
 }
 
