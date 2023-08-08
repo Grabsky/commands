@@ -26,6 +26,8 @@ package cloud.grabsky.commands;
 import cloud.grabsky.commands.exception.IncompatibleSenderException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -35,8 +37,9 @@ import org.jetbrains.annotations.NotNull;
  * {@link RootCommandExecutor} represents command executor.
  */
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
-public final class RootCommandExecutor {
+public final class RootCommandExecutor implements Audience {
 
+    @Delegate(types = Audience.class)
     private final CommandSender sender;
 
     /**
