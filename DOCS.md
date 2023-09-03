@@ -1,5 +1,5 @@
 # Documentation - 1.X
-Documentation page is still in progress.
+Documentation page is still in progress and may not be up-to-date.
 
 ## Overview
 1. **[Commands](#commands)** - learn how to create commands.
@@ -10,14 +10,25 @@ Documentation page is still in progress.
 <br />
 
 ## Commands
-Defining a simple `/tell <player> <message>` command:
-```java
-public final class TellCommand extends RootCommand {
+Simple `/tell (player) (message)` command can be defined and registered like that:
 
-    public TellCommand() {
-        super("tell", List.of("w", "pm"), "example.command.tell", "/tell <player> <message>", "Sends private message to specified player.");
-        //    name    aliases             permission              usage                       description
+```java
+// MAIN CLASS
+public final class MainClass extends JavaPlugin {
+    
+    @Override
+    public void onEnable() {
+        // Creating a new instance of RootCommandManager.
+        final RootCommandManager commands = new RootCommandManager(this);
+        // Registering our command. (defined below)
+        commands.register(TellCommand.class);
     }
+    
+}
+
+// COMMAND CLASS
+@Command(name = "tell", aliases = {"w", "pm"}, permission = "example.command.tell", usage = "/tell <player> <message>", description = "Sends private message to specified player.")
+public final class TellCommand extends RootCommand {
 
     @Override
     public CompletionsProvider onTabComplete(final RootCommandContext context, final int index) throws CommandLogicException {
@@ -26,12 +37,13 @@ public final class TellCommand extends RootCommand {
 
     @Override
     public void onCommand(final RootCommandContext context, final ArgumentQueue queue) throws CommandLogicException {
-        // getting command executor as Player
+        // Getting command executor (sender) as Player.
         final Player sender = context.getExecutor().asPlayer();
-        // getting arguments
+        // Getting first argument (target) as Player.
         final Player target = queue.next(Player.class).asRequired();
+        // Getting the rest argument (message) as greedy String.
         final String message = queue.next(String.class, StringArgument.GREEDY).asRequired();
-        // sending messages
+        // Sending messages.
         sender.sendMessage("[You -> " + target.getName() + "]: " + message);
         target.sendMessage("[" + sender.getName() + " -> You]: " + message);
     }
@@ -39,14 +51,6 @@ public final class TellCommand extends RootCommand {
 }
 ```
 
-Registering a command:
-```java
-// EXAMPLE 1 - Regular classes.
-handler.registerCommand(new ExampleCommand(plugin));
-
-// EXAMPLE 2 - Zero-arg-constructor classes can be optionally registered like that.
-handler.registerCommand(ExampleCommand.class);
-```
 <br />
 
 ## Arguments
@@ -86,19 +90,19 @@ Built-in arguments. All of them implement `ArgumentParser<T>` and some of them `
 ```
 
 Using non-default argument parsers:
+
 ```java
 @Override
 // Example command: /edit-translations (property) (value)
-public void onCommand(final RootCommandContext context, final ArgumentQueue arguments) {
-    // Getting command executor and trying to cast it to a Player.
-    final CommandSender sender = context.getExecutor().asCommandSender();
-    // Parsing NEXT command argument to (LITERAL) String.
+public void onCommand(final @NotNull RootCommandContext context, final @NotNull ArgumentQueue arguments) {
+    // Getting next argument (proprty) as String. 
     final String property = arguments.next(String.class).asRequired();
-    final String value = arguments.next(String.class, StringArgument.GREEDY).asRequired();
-    // Doing some command logic... following line is just an example.
+    // Getting next argument (value) as String. 
+    final String value = arguments.next(String.class).asRequired();
+    // Doing something with the arguments... following line is just an example.
     translations.set(property, value);
-    // Sending confirmation message to the command executor.
-    sender.sendMessage("Property '" + property + "' has now value of '" + value + "'");
+    // RootCommandExecutor implements Audience and can receive messages without un-wrapping.
+    context.getExecutor().sendMessage("Property '" + property + "' has now value of '" + value + "'");
 }
 ```
 
@@ -143,8 +147,8 @@ Built-in exceptions:
 
 By default, all exceptions send non user-friendly errors. Here's how to override them:
 ```java
-handler.setExceptionHandler(BooleanArgument.Exception.class, (exc, context) -> {
-    context.getExecutor().asCommandSender().sendMessage("Invalid input for boolean argument: " + exc.getInputValue());
+handler.setExceptionHandler(BooleanArgument.Exception.class, (e, context) -> {
+    context.getExecutor().sendMessage("Invalid input for boolean argument: " + e.getInputValue());
 });
 ```
 
@@ -152,26 +156,35 @@ handler.setExceptionHandler(BooleanArgument.Exception.class, (exc, context) -> {
 
 ## Completions
 Defining completions for simple `/give <player> <material> <amount>` command:
+
 ```java
-//   CMD: /give <player> <material> <amount>
-// INDEX:       00000000 1111111111 22222222
-@Override
-public @Nullable CompletionsProvider onTabComplete(final RootCommandContext context, final int index) {
-    return switch (index) {
-        case 0 -> CompletionsProvider.of(Player.class);
-        case 1 -> CompletionsProvider.of(Material.class);
-        case 2 -> CompletionsProvider.of("1", "16", "32", "64");
-        default -> CompletionsProvider.EMPTY;
-    };
+@Command(...)
+public final class GiveCommand extends RootCommand {
+    
+    @Override
+    public @Nullable CompletionsProvider onTabComplete(final @NotNull RootCommandContext context, final int index) {
+        return switch (index) {
+            case 0 -> CompletionsProvider.of(Player.class);
+            case 1 -> CompletionsProvider.of(Material.class);
+            case 2 -> CompletionsProvider.of("1", "16", "32", "64");
+            default -> CompletionsProvider.EMPTY;
+        };
+    }
+    
+    @Override
+    public void onCommand(...) {
+        ...
+    }
+    
 }
 ```
 
-Overriding default completions providers:
+Default completion providers can be easily overriden:
 ```java
-// EXAMPLE 1
+// EXAMPLE #1
 handler.setCompletionsProvider(Boolean.class, CompletionsProvider.of("true", "false"));
 
-// EXAMPLE 2
+// EXAMPLE #2
 handler.setCompletionsProvider(OfflinePlayer.class, (context) -> {
     return Bukkit.getOfflinePlayers().stream().map(OfflinePlayer::getUniqueId).toList();
 });
