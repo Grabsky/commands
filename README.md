@@ -1,36 +1,37 @@
-# grabsky/commands
-[![](https://img.shields.io/github/actions/workflow/status/Grabsky/commands/gradle.yml)](https://github.com/Grabsky/commands/actions/workflows/gradle.yml)
-[![](https://img.shields.io/codefactor/grade/github/Grabsky/commands/main)](https://www.codefactor.io/repository/github/grabsky/commands/overview/main)
-[![](https://img.shields.io/github/v/release/Grabsky/commands)](https://github.com/Grabsky/commands/releases/latest)  
-Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers. Project *should* be stable as of version `1.X` but expect breaking changes between future releases.
+# commands
+<span>
+    <a href=""><img alt="Maven metadata URL" src="https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.grabsky.cloud%2Freleases%2Fcloud%2Fgrabsky%2Fcommands%2Fmaven-metadata.xml&style=for-the-badge&logo=gradle&label=%20"></a>
+    <a href=""><img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/Grabsky/commands/gradle.yml?style=for-the-badge&logo=github&logoColor=white&label=%20"></a>
+    <a href=""><img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/Grabsky/commands/main?style=for-the-badge&logo=codefactor&logoColor=white&label=%20"></a>
+</span>
+<p></p>
+
+Simple, no non-sense command framework for **[Paper](https://github.com/PaperMC/Paper)** servers.
 
 Brigadier is not currently supported, nor is it guaranteed to be supported in the future.
 
 <br />
 
 ## Requirements
-Requires **Java 17** (or higher) and **Paper 1.19.4** (or higher).
+Requires **Java 17** (or higher) and **Paper 1.20.1** (or higher).
 
 <br />
 
 ## Getting Started
-To use this project in your plugin, add following repository(-ies):
+To use this project in your plugin, add following repository:
 ```groovy
 repositories {
-    // Releases repository.
-    maven { url = "https://repo.grabsky.cloud/releases" }
-    // Snapshots repository. (unstable api)
-    maven { url = "https://repo.grabsky.cloud/snapshots" }
+    maven { url = 'https://repo.grabsky.cloud/releases' }
 }
 ```
 Then specify dependency:
 ```groovy
 dependencies {
-    // Snapshots use first seven (7) characters of commit hash as a version.
-    // NOTE: Only pushed (and successfully built) commits are available in the repository.
-    implementation("cloud.grabsky:commands:[_VERSION_]")
+    implementation 'cloud.grabsky:commands:[_VERSION_]'
 }
 ```
+You can also use [GitHub Packages](https://github.com/Grabsky/commands/packages/) - read more about that [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package).
+
 
 <br />
 
