@@ -1,4 +1,4 @@
-# Documentation - 1.X
+# Documentation
 Documentation page is still in progress and may not be up-to-date.
 
 ## Overview
