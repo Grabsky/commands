@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static cloud.grabsky.commands.util.Arrays.toArrayList;
 
@@ -47,10 +49,12 @@ public interface CompletionsProvider {
      */
     CompletionsProvider EMPTY = (context) -> Arrays.EMPTY_STRING_LIST;
 
+    // TO-DO: Javadocs
     static @NotNull CompletionsProvider of(final List<String> completions) {
         return (context) -> completions;
     }
 
+    // TO-DO: Javadocs
     static @NotNull CompletionsProvider of(final String... completions) {
         return (context) -> toArrayList(completions);
     }
@@ -84,8 +88,19 @@ public interface CompletionsProvider {
         };
     }
 
+    // TO-DO: Javadocs
     static @NotNull CompletionsProvider of(final Class<?> type) {
         return (context) -> context.getManager().getCompletionsProvider(type).provide(context);
+    }
+
+    // TO-DO: Javadocs
+    static @NotNull CompletionsProvider filtered(final Predicate<String> predicate, final String... any) {
+        return (context) -> Stream.of(any).filter(predicate).toList();
+    }
+
+    // TO-DO: Javadocs
+    static @NotNull CompletionsProvider filtered(final Predicate<String> predicate, final List<String> completions) {
+        return (context) -> completions.stream().filter(predicate).toList();
     }
 
     @NotNull List<String> provide(final @NotNull RootCommandContext context) throws CommandLogicException;
