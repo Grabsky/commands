@@ -4,21 +4,13 @@ plugins {
 }
 
 group = "cloud.grabsky"
-version = "1.20.1-${System.getenv("GITHUB_RUN_NUMBER") ?: "dev"}"
+version = "1.20.1-${System.getenv("GITHUB_RUN_NUMBER") ?: "DEV"}"
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
 
 publishing {
     repositories {
-        maven {
-            url = "https://repo.grabsky.cloud/releases/"
-            authentication { basic(BasicAuthentication) }
-            credentials {
-                username = System.getenv("REPO_USERNAME")
-                password = System.getenv("REPO_SECRET")
-            }
-        }
         maven {
             url = "https://maven.pkg.github.com/Grabsky/commands"
             credentials {
