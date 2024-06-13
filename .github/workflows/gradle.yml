@@ -12,16 +12,30 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Checkout
       - uses: actions/checkout@v3
+      # JDK 17
       - name: JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: "17"
           distribution: "temurin"
+      # Publish
       - name: Publish
         uses: gradle/gradle-build-action@v2
         with:
           arguments: publish
         env:
-          # GitHub Packages
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Expose Release Name
+      - name: Expose Release Name
+        run: echo "PROJECT_RELEASE_NAME=$( ./gradlew release -q --no-rebuild )" >> $GITHUB_ENV
+      # Expose Tag
+      - name: Expose Tag
+        run: echo "PROJECT_TAG=$( ./gradlew tag -q --no-rebuild )" >> $GITHUB_ENV
+      # Release
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          name: "${{ env.PROJECT_RELEASE_NAME }}"
+          tag: "${{ env.PROJECT_TAG }}"
