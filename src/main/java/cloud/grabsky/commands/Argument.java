@@ -25,6 +25,7 @@ package cloud.grabsky.commands;
 
 import cloud.grabsky.commands.component.ArgumentParser;
 import cloud.grabsky.commands.component.ExceptionHandler;
+import cloud.grabsky.commands.component.NullableElement;
 import cloud.grabsky.commands.component.OptionalElement;
 import cloud.grabsky.commands.component.RequiredElement;
 import cloud.grabsky.commands.exception.ArgumentParseException;
@@ -38,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * {@link Argument Argument&lt;T&gt;} represents intermediary type between user input and desired value.
  */
-public final class Argument<T> implements RequiredElement<T>, OptionalElement<T> {
+public final class Argument<T> implements RequiredElement<T>, OptionalElement<T>, NullableElement<T> {
 
     @Getter(AccessLevel.PUBLIC)
     private final Class<T> type;
@@ -84,6 +85,15 @@ public final class Argument<T> implements RequiredElement<T>, OptionalElement<T>
             return this.asRequired();
         } catch (final MissingInputException cause) {
             return def;
+        }
+    }
+
+    @Override
+    public @Nullable T asNullable() {
+        try {
+            return this.asRequired();
+        } catch (final ArgumentParseException | MissingInputException cause) {
+            return null;
         }
     }
 
