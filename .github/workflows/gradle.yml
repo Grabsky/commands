@@ -27,6 +27,8 @@ jobs:
           arguments: publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VELA_USERNAME: ${{ secrets.VELA_USERNAME }}
+          VELA_PASSWORD: ${{ secrets.VELA_PASSWORD }}
       # Expose Release Name
       - name: Expose Release Name
         run: echo "PROJECT_RELEASE_NAME=$( ./gradlew release -q --no-rebuild )" >> $GITHUB_ENV

@@ -23,11 +23,16 @@ dependencies {
 
 publishing {
     repositories {
-        maven {
-            url = "https://maven.pkg.github.com/Grabsky/commands"
+        maven { name = "gpr"; url = "https://maven.pkg.github.com/Grabsky/bedrock"
             credentials {
                 username = System.getenv("GITHUB_ACTOR")
                 password = System.getenv("GITHUB_TOKEN")
+            }
+        }
+        maven { name = "vela"; url = "https://vela.grabsky.workers.dev/releases"
+            credentials {
+                username = System.getenv("VELA_USERNAME")
+                password = System.getenv("VELA_PASSWORD")
             }
         }
     }
