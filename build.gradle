@@ -3,8 +3,11 @@ plugins {
     id("maven-publish")
 }
 
+final String VERSION = "1.21.X"
+final String RUN_NUMBER = System.getenv("GITHUB_RUN_NUMBER") ?: "DEV"
+
 group = "cloud.grabsky"
-version = "1.20.1-${System.getenv("GITHUB_RUN_NUMBER") ?: "DEV"}"
+version = "$VERSION-$RUN_NUMBER"
 
 repositories {
     mavenCentral()
@@ -18,7 +21,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.32")
     annotationProcessor("org.projectlombok:lombok:1.18.32")
     // Paper API
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
 }
 
 publishing {
@@ -29,10 +32,10 @@ publishing {
                 password = System.getenv("GITHUB_TOKEN")
             }
         }
-        maven { name = "vela"; url = "https://vela.grabsky.workers.dev/releases"
+        maven { name = "repsy"; url = "https://repo.repsy.io/grabsky/maven"
             credentials {
-                username = System.getenv("VELA_USERNAME")
-                password = System.getenv("VELA_PASSWORD")
+                username = System.getenv("REPSY_USERNAME")
+                password = System.getenv("REPSY_PASSWORD")
             }
         }
     }
@@ -43,21 +46,25 @@ publishing {
     }
 }
 
+compileJava {
+    options.fork = true
+    // Setting compatibility to Java 21 and above.
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
 java {
-    withJavadocJar()
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    withJavadocJar()
 }
 
 javadoc {
+    // Suppressing JavaDoc warnings.
     (options as CoreJavadocOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
-tasks.register("release") {
-    print("${version.toString().split('-')[0]} #${System.getenv("GITHUB_RUN_NUMBER")}")
-}
+// Returns formatted release name. (for GitHub Actions)
+tasks.register("getRelease", () -> print("$VERSION #$RUN_NUMBER"))
 
-tasks.register("tag") {
-    print(version)
-}
+// Returns formatted tag name. (for GitHub Actions)
+tasks.register("getTag", () -> print("$VERSION+$RUN_NUMBER"))
